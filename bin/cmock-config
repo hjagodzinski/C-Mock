@@ -1,0 +1,35 @@
+#!/bin/bash
+
+function print_usage
+{
+	echo "cmock-config provides compilation flags and linker options required when working with cmock"
+	echo ""
+	echo "$0 OPTION"
+	echo ""
+	echo "Options:"
+	echo -e "\t    --cflags   print compilation flags"
+	echo -e "\t    --libs     print linker options"
+	echo -e "\t-h, --help print help"
+}
+
+if [ $# -ne 1 ]
+then
+	print_usage 1>&2
+	exit 1
+elif [ "$1" == --cflags ]
+then
+	DIR=`readlink -f $0`
+	DIR=`dirname $DIR`
+	DIR=`dirname $DIR`
+
+	echo "-I$DIR/include"
+elif [ "$1" == --libs ]
+then
+	echo "-rdynamic -Wl,--no-as-needed -ldl"
+elif [ "$1" == -h -o "$1" == --help ]
+then
+	print_usage
+else
+	print_usage 1>&2
+	exit 1
+fi

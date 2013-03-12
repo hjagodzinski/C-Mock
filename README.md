@@ -14,6 +14,7 @@ Requirements
 
 Guide
 -----
+### Writing mocks ###
 C Mock requires no prior build. As already mentioned it is just a set of header files. What it really gives you are three macros:
 
 * MOCK\_FUNCTION\_\*
@@ -43,17 +44,34 @@ Function is mocked as long as its corresponding mock class instance exists. This
 	    foo(1, 2); // call real function
     }
 
-C Mock uses internally some tricks specific to GNU/Linux platforms and a test building requires a few additional steps.
+### Building ###
+
+C Mock uses internally some tricks specific to GNU/Linux platform and a test building requires a few additional steps.
 
 Firstly, all functions you want to mock must be in dynamic libraries. If it includes your project-specific functions you must put them to dynamic library. In such a circumstances it seems reasonable to build all code under test as dynamic library. Selecting only those parts that you are going to mock might be tedious and cumbersome.
 
-Secondly, you must pass following flags to linker when building test executable:
+Secondly, you must pass following options to linker when building test executable:
 
 * *-rdynamic* - add all symbols to dynamic symbol table
 * *-Wl,--no-as-needed* - link with library event though during static linking there are no dependencies to it
 * *-ldl* - dynamic linking loader library
 
-When building code under test as dynamic library it is handy to specify soname as absolute path name. Then when test executable is run no addition environment setup is required for dynamic linking loader to locate your library (i.e. setting LD\_LIBRARY\_PATH).
+C Mock comes with *cmock-config* tool to hide all these details away from you. Run
+
+    cmock-config --cflags
+
+and
+
+    cmock-config --libs
+
+to get compilations flags and linker options, respectively.
+
+Let's say you built a code under test into libfoo.so and put a test code in bar.cc. To build your test you would run:
+
+    g++ `cmock-config --cflags` -c bar.cc -o bar.o
+    g++ `cmock-config --libs` -pthread -lfoo -lgmock -lgtest bar.o -o bar # Google Test requires -pthread
+
+When building code under test as dynamic library it is handy to specify *soname* as absolute path name. Then when test executable is run no addition environment setup is required for dynamic linking loader to locate your library (i.e. setting LD\_LIBRARY\_PATH).
 
 Example
 -------
