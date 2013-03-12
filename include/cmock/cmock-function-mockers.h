@@ -49,6 +49,8 @@ class c \
     typedef GMOCK_RESULT_(, F) (*func_type)(); \
 \
     public: \
+        static func_type real; \
+\
         c() { \
             mock = this; \
         } \
@@ -96,7 +98,6 @@ class c \
         } \
 \
         static c *mock; \
-        static func_type real; \
 \
         mutable ::testing::FunctionMocker<F> GMOCK_MOCKER_(0,, n); \
 \
@@ -116,6 +117,8 @@ class c \
     typedef GMOCK_RESULT_(, F) (*func_type)(GMOCK_ARG_(, F, 1) cmock_a1); \
 \
     public: \
+        static func_type real; \
+\
         c() { \
             mock = this; \
         } \
@@ -163,7 +166,6 @@ class c \
         } \
 \
         static c *mock; \
-        static func_type real; \
 \
         mutable ::testing::FunctionMocker<F> GMOCK_MOCKER_(1,, n); \
 \
@@ -184,6 +186,8 @@ class c \
         GMOCK_ARG_(, F, 2) cmock_a2); \
 \
     public: \
+        static func_type real; \
+\
         c() { \
             mock = this; \
         } \
@@ -234,7 +238,6 @@ class c \
         } \
 \
         static c *mock; \
-        static func_type real; \
 \
         mutable ::testing::FunctionMocker<F> GMOCK_MOCKER_(2,, n); \
 \
@@ -257,6 +260,8 @@ class c \
         GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3); \
 \
     public: \
+        static func_type real; \
+\
         c() { \
             mock = this; \
         } \
@@ -307,7 +312,6 @@ class c \
         } \
 \
         static c *mock; \
-        static func_type real; \
 \
         mutable ::testing::FunctionMocker<F> GMOCK_MOCKER_(3,, n); \
 \
@@ -331,6 +335,8 @@ class c \
         GMOCK_ARG_(, F, 4) cmock_a4); \
 \
     public: \
+        static func_type real; \
+\
         c() { \
             mock = this; \
         } \
@@ -386,7 +392,6 @@ class c \
         } \
 \
         static c *mock; \
-        static func_type real; \
 \
         mutable ::testing::FunctionMocker<F> GMOCK_MOCKER_(4,, n); \
 \
@@ -412,6 +417,8 @@ class c \
         GMOCK_ARG_(, F, 4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5); \
 \
     public: \
+        static func_type real; \
+\
         c() { \
             mock = this; \
         } \
@@ -468,7 +475,6 @@ class c \
         } \
 \
         static c *mock; \
-        static func_type real; \
 \
         mutable ::testing::FunctionMocker<F> GMOCK_MOCKER_(5,, n); \
 \
@@ -495,6 +501,8 @@ class c \
         GMOCK_ARG_(, F, 6) cmock_a6); \
 \
     public: \
+        static func_type real; \
+\
         c() { \
             mock = this; \
         } \
@@ -555,7 +563,6 @@ class c \
         } \
 \
         static c *mock; \
-        static func_type real; \
 \
         mutable ::testing::FunctionMocker<F> GMOCK_MOCKER_(6,, n); \
 \
@@ -584,6 +591,8 @@ class c \
         GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, 7) cmock_a7); \
 \
     public: \
+        static func_type real; \
+\
         c() { \
             mock = this; \
         } \
@@ -644,7 +653,6 @@ class c \
         } \
 \
         static c *mock; \
-        static func_type real; \
 \
         mutable ::testing::FunctionMocker<F> GMOCK_MOCKER_(7,, n); \
 \
@@ -675,6 +683,8 @@ class c \
         GMOCK_ARG_(, F, 8) cmock_a8); \
 \
     public: \
+        static func_type real; \
+\
         c() { \
             mock = this; \
         } \
@@ -738,7 +748,6 @@ class c \
         } \
 \
         static c *mock; \
-        static func_type real; \
 \
         mutable ::testing::FunctionMocker<F> GMOCK_MOCKER_(8,, n); \
 \
@@ -770,6 +779,8 @@ class c \
         GMOCK_ARG_(, F, 8) cmock_a8, GMOCK_ARG_(, F, 9) cmock_a9); \
 \
     public: \
+        static func_type real; \
+\
         c() { \
             mock = this; \
         } \
@@ -835,7 +846,6 @@ class c \
         } \
 \
         static c *mock; \
-        static func_type real; \
 \
         mutable ::testing::FunctionMocker<F> GMOCK_MOCKER_(9,, n); \
 \
@@ -869,6 +879,8 @@ class c \
         GMOCK_ARG_(, F, 10) cmock_a10); \
 \
     public: \
+        static func_type real; \
+\
         c() { \
             mock = this; \
         } \
@@ -938,7 +950,6 @@ class c \
         } \
 \
         static c *mock; \
-        static func_type real; \
 \
         mutable ::testing::FunctionMocker<F> GMOCK_MOCKER_(10,, n); \
 \

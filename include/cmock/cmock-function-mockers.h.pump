@@ -57,6 +57,8 @@ class c \
     typedef GMOCK_RESULT_(, F) (*func_type)($declare_args); \
 \
     public: \
+        static func_type real; \
+\
         c() { \
             mock = this; \
         } \
@@ -104,7 +106,6 @@ class c \
         } \
 \
         static c *mock; \
-        static func_type real; \
 \
         mutable ::testing::FunctionMocker<F> GMOCK_MOCKER_($i,, n); \
 \

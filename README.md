@@ -23,16 +23,16 @@ C Mock requires no prior build. As already mentioned it is just a set of header 
 
 These macros do what theirs' method counterparts do MOCK\_METHOD\_\*, EXPECT\_CALL and ON\_CALL, respectively. There are small differences though.
 
-MOCK\_FUNCTION\_\* in fact stands for series of macros for defining C function mocks i.e. MOCK\_FUNCTION2 - does it resemble you something? It takes three arguments mock class name, function name and function prototype. For instance following line of code defines mock class FooFunctionMock for function int foo(int, int):
+MOCK\_FUNCTION\_\* in fact stands for series of macros for defining C function mocks i.e. MOCK\_FUNCTION2 - does it resemble you something? It takes three arguments mock class name, function name and function prototype. For instance following line of code defines mock class *FooFunctionMock* for function *int foo(int, int)*:
 
     FUNCTION_MOCK2(FooFunctionMock, foo, int(int, int));
 
-EXPECT\_FUNCTION\_CALL and ON\_FUNCTION\_CALL do exactly what theirs' method equivalents. Both take two arguments mock class instance and arguments you expect - there is no need to repeat function name since we already know it at this point. For instance, suppose we expect foo function to be called once with arguments 1 and 2, and want it to return 3:
+EXPECT\_FUNCTION\_CALL and ON\_FUNCTION\_CALL do exactly what theirs' method equivalents. Both take two arguments mock class instance and arguments you expect - there is no need to repeat function name since we already know it at this point. Suppose we expect *foo* function to be called once with arguments *1* and *2*, and want it to return *3*:
 
     FooFunctionMock mock;
     EXPECT_FUNCTION_CALL(mock, (1, 2)).WillOnce(::testing::Return(3));
 
-Function is mocked as long as its corresponding mock class instance exists. This means function is mocked only when required. Still there might be cases you want call real function.
+Function is mocked as long as its corresponding mock class instance exists. This means function is mocked only when required.
 
     {
 	    {
@@ -43,6 +43,12 @@ Function is mocked as long as its corresponding mock class instance exists. This
 
 	    foo(1, 2); // call real function
     }
+
+Event though you mock function, you might want to use its real implementation. Each mock class exports static *real* class field which holds pointer to real function.
+
+    FooFunctionMock mock;
+    EXPECT_FUNCTION_CALL(mock, (1, 2)).WillOnce(::testing::Invoke(FooFunctionMock::real));
+    foo(1, 2); // call real function
 
 ### Building ###
 
@@ -66,7 +72,7 @@ and
 
 to get compilations flags and linker options, respectively.
 
-Let's say you built a code under test into libfoo.so and put a test code in bar.cc. To build your test you would run:
+Let's say you built a code under test into *libfoo.so* and put a test code in *bar.cc*. To build your test you would run:
 
     g++ `cmock-config --cflags` -c bar.cc -o bar.o
     g++ `cmock-config --libs` -pthread -lfoo -lgmock -lgtest bar.o -o bar # Google Test requires -pthread
