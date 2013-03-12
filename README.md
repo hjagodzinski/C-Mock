@@ -25,7 +25,7 @@ These macros do what theirs' method counterparts do MOCK\_METHOD\_\*, EXPECT\_CA
 
 MOCK\_FUNCTION\_\* in fact stands for series of macros for defining C function mocks i.e. MOCK\_FUNCTION2 - does it resemble you something? It takes three arguments mock class name, function name and function prototype. For instance following line of code defines mock class *FooFunctionMock* for function *int foo(int, int)*:
 
-    FUNCTION_MOCK2(FooFunctionMock, foo, int(int, int));
+    MOCK_FUNCTION2(FooFunctionMock, foo, int(int, int));
 
 EXPECT\_FUNCTION\_CALL and ON\_FUNCTION\_CALL do exactly what theirs' method equivalents. Both take two arguments mock class instance and arguments you expect - there is no need to repeat function name since we already know it at this point. Suppose we expect *foo* function to be called once with arguments *1* and *2*, and want it to return *3*:
 
@@ -72,7 +72,7 @@ and
 
 to get compilations flags and linker options, respectively.
 
-Let's say you built a code under test into *libfoo.so* and put a test code in *bar.cc*. To build your test you would run:
+Let's say you built a code under test into *libfoo.so* and put a test code in *bar.cc*. To build your test executable you would run:
 
     g++ `cmock-config --cflags` -c bar.cc -o bar.o
     g++ `cmock-config --libs` -pthread -lfoo -lgmock -lgtest bar.o -o bar # Google Test requires -pthread
