@@ -2,12 +2,12 @@
 
 function print_usage
 {
-	echo "cmock-config provides compilation flags and linker options required when working with cmock"
+	echo "cmock-config provides compilation and linker options required when using with cmock"
 	echo ""
 	echo "$0 OPTION"
 	echo ""
 	echo "Options:"
-	echo -e "\t    --cflags   print compilation flags"
+	echo -e "\t    --cflags   print compilation options"
 	echo -e "\t    --libs     print linker options"
 	echo -e "\t-h, --help print help"
 }
