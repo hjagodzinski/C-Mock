@@ -4,9 +4,16 @@ C Mock - Google Mock Extension
 Overview
 --------
 
-C Mock is [Google Mock] [1] extension allowing for mocking functions.
+C Mock is [Google Mock][1] extension allowing for mocking functions.
 
 This is not either a patch to nor fork of Google Mock. This is just a set of headers providing a way of using tools for mock methods with mock functions in tests.
+
+C Mock is not intended to promote bad design. Its goal is to help people test their code.
+
+Before use of C Mock following reading is recommended:
+
+* [My code calls a static/global function. Can I mock it?][2]
+* [Defeat "Static Cling"][3]
 
 Requirements
 ------------
@@ -123,4 +130,12 @@ If your platform is supported, the following commands should succeed:
 
 Tests are quite simple and are good source of example.
 
+References
+----------
+* [Google Mock][1]
+* [My code calls a static/global function. Can I mock it?][2]
+* [Defeat "Static Cling"][3]
+
 [1]: http://code.google.com/p/googlemock/ "Google Mock"
+[2]: https://code.google.com/p/googlemock/wiki/FrequentlyAskedQuestions#My_code_calls_a_static/global_function.__Can_I_mock_it? "My code calls a static/global function. Can I mock it?"
+[3]: http://googletesting.blogspot.com/2008/06/defeat-static-cling.html "Defeat "Static Cling""
