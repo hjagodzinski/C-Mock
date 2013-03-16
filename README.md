@@ -3,52 +3,73 @@ C Mock - Google Mock Extension
 
 Overview
 --------
+
 C Mock is [Google Mock] [1] extension allowing for mocking C functions.
 
 This is not either a patch to nor fork of Google Mock. This is just a set of headers providing a way of using tools for mock methods with mock C functions in tests.
 
 Requirements
 ------------
+
 * Google Mock (1.6 or newer)
 * GNU/Linux platform that Google Mock supports
 
 Guide
 -----
-### Writing mocks ###
-C Mock requires no prior build. As already mentioned it is just a set of header files. What it really gives you are three macros:
 
-* MOCK\_FUNCTION\_\*
+C Mock requires no prior build. As already mentioned it is just a set of header files. What it really gives you are four macros:
+
+* DECLARE\_FUNCTION\_MOCK\*
+* IMPLEMENT\_FUNCTION\_MOCK\*
 * EXPECT\_FUNCTION\_CALL
 * ON\_FUNCTION\_CALL
 
 These macros do what theirs' method counterparts do MOCK\_METHOD\_\*, EXPECT\_CALL and ON\_CALL, respectively. There are small differences though.
 
-MOCK\_FUNCTION\_\* in fact stands for series of macros for defining C function mocks i.e. MOCK\_FUNCTION2 - does it resemble you something? It takes three arguments mock class name, function name and function prototype. For instance following line of code defines mock class *FooFunctionMock* for function *int foo(int, int)*:
+### Creating mock ###
 
-    MOCK_FUNCTION2(FooFunctionMock, foo, int(int, int));
+Both DECLARE\_FUNCTION\_MOCK\* and IMPLEMENT\_FUNCTION\_MOCK\* in fact stand for a series of macros for defining and implementing C function mocks, respectively. These macros take three arguments: mock class name, function name and function prototype.
 
-EXPECT\_FUNCTION\_CALL and ON\_FUNCTION\_CALL do exactly what theirs' method equivalents. Both take two arguments mock class instance and arguments you expect - there is no need to repeat function name since we already know it at this point. Suppose we expect *foo* function to be called once with arguments *1* and *2*, and want it to return *3*:
+C Mock internally redefines function being mocked. Because only one implementation of function might exist in executable, splitting of declaration and implementation is necessary. Especially, if mocking of a certain function is happening in a more than one compilation unit. Therefore declaration should be put in a header file whereas implementation in a source file.
 
-    FooFunctionMock mock;
-    EXPECT_FUNCTION_CALL(mock, (1, 2)).WillOnce(::testing::Return(3));
+C Mock does not know whether mocked function is declared with name mangling - whether this is pure C function or C++ function. Therefore C Mock does not redeclare mocked function. Original function prototype declaration should be used (i.e. use of original function header file).
+
+Suppose you want to mock *int foo(int, int)* function declared in *foo.h* header file and name mock class *FooFunctionMock*. You could create two files, one header with declaration and one source file with implementation:
+
+* *foo_mock.h*
+
+            #include "foo.h" // use orginal function declaration
+
+            DECLARE_FUNCTION_MOCK2(FooFunctionMock, foo, int(int, int));
+
+* *foo_mock.cc*
+
+            IMPLEMENT_FUNCTION_MOCK2(FooFunctionMock, foo, int(int, int));
+
+### Specifying expectations ###
+
+EXPECT\_FUNCTION\_CALL and ON\_FUNCTION\_CALL do exactly what theirs' method equivalents. Both take two arguments: mock class instance and arguments you expect - there is no need to repeat function name since it is already known at this point. Suppose we expect *foo* function to be called once with arguments *1* and *2*, and want it to return *3*:
+
+        FooFunctionMock mock;
+        EXPECT_FUNCTION_CALL(mock, (1, 2)).WillOnce(::testing::Return(3));
 
 Function is mocked as long as its corresponding mock class instance exists. This means function is mocked only when required.
 
-    {
-	    {
-		    FooFunctionMock mock;
-		    /* ... */
-		    foo(1, 2); // call mock
-	    }
+        {
+            {
+                FooFunctionMock mock;
+                /* ... */
+                foo(1, 2); // call mock
+            }
 
-	    foo(1, 2); // call real function
-    }
+            foo(1, 2); // call real function
+        }
 
 Event though you mock function, you might want to use its real implementation. Each mock class exports static *real* class field which holds pointer to real function.
 
-    FooFunctionMock mock;
-    EXPECT_FUNCTION_CALL(mock, (1, 2)).WillOnce(::testing::Invoke(FooFunctionMock::real));
-    foo(1, 2); // call real function
+        FooFunctionMock mock;
+        EXPECT_FUNCTION_CALL(mock, (1, 2)).WillOnce(::testing::Invoke(FooFunctionMock::real));
+        foo(1, 2); // call real function
 
 ### Building ###
 
@@ -64,29 +85,29 @@ Secondly, you must pass following options to linker when building test executabl
 
 C Mock comes with *cmock-config* tool to hide all these details away from you. Run
 
-    cmock-config --cflags
+        cmock-config --cflags
 
 and
 
-    cmock-config --libs
+        cmock-config --libs
 
 to get compilations flags and linker options, respectively.
 
 Let's say you built a code under test into *libfoo.so* and put a test code in *bar.cc*. To build your test executable you would run:
 
-    g++ `cmock-config --cflags` -c bar.cc -o bar.o
-    g++ `cmock-config --libs` -pthread -lfoo -lgmock -lgtest bar.o -o bar # Google Test requires -pthread
+        g++ `cmock-config --cflags` -c bar.cc -o bar.o
+        g++ `cmock-config --libs` -pthread -lfoo -lgmock -lgtest bar.o -o bar # Google Test requires -pthread
 
 When building code under test as dynamic library it is handy to specify *soname* as absolute path name. Then when test executable is run no addition environment setup is required for dynamic linking loader to locate your library (i.e. setting LD\_LIBRARY\_PATH).
 
-Example
--------
-See example source directory for example.
+Test
+----
 
 If your platform is supported, the following commands should succeed:
 
-    cd example
-    make
-    ./example
+        make
+        make test
+
+Tests are quite simple and are good source of example.
 
 [1]: http://code.google.com/p/googlemock/ "Google Mock"

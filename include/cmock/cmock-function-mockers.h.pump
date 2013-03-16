@@ -51,7 +51,7 @@ $var call_args = [[$for j, [[cmock_a$j]]]]
 $var declare_args = [[$for j, [[GMOCK_ARG_(, F, $j) cmock_a$j]]]]
 $var matcher_args = [[$for j, [[GMOCK_MATCHER_(, F, $j) cmock_a$j]]]]
 
-#define MOCK_FUNCTION$i(c, n, F) \
+#define DECLARE_FUNCTION_MOCK$i(c, n, F) \
 class c \
 { \
     typedef GMOCK_RESULT_(, F) (*func_type)($declare_args); \
@@ -59,60 +59,67 @@ class c \
     public: \
         static func_type real; \
 \
-        c() { \
-            mock = this; \
-        } \
+        c(); \
+        ~c(); \
 \
-        ~c() { \
-            mock = NULL; \
-        } \
-\
-        GMOCK_RESULT_(, F) operator()($declare_args) { \
-            GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
-            ::testing::internal::Function<F>::ArgumentTuple>::value == $i, \
-             this_method_does_not_take_$i[[]]_argument[[$if i != 1 [[s]]]]); \
-             GMOCK_MOCKER_($i,, n).SetOwnerAndName(this, #n); \
-             return GMOCK_MOCKER_($i,, n).Invoke($call_args); \
-        } \
-\
-        ::testing::MockSpec<F>& \
-        cmock_func($matcher_args) { \
-            GMOCK_MOCKER_($i,, n).RegisterOwner(this); \
-            return GMOCK_MOCKER_($i,, n).With($call_args); \
-        } \
+        GMOCK_RESULT_(, F) operator()($declare_args); \
+        ::testing::MockSpec<F>& cmock_func($matcher_args); \
 \
     private: \
-        static func_type lookup() { \
-            func_type real = (func_type)dlsym(RTLD_NEXT, #n); \
-            if (real == NULL) \
-            { \
-                std::ostringstream msg; \
-                msg << "unable to load "; \
-                msg << #n; \
-                msg << " function symbol"; \
-                throw std::logic_error(msg.str()); \
-            } \
-            return real; \
-        } \
+        static func_type lookup(); \
+        static GMOCK_RESULT_(, F) call($declare_args); \
 \
-        static GMOCK_RESULT_(, F) call($declare_args) \
-        { \
-            if (mock != NULL) \
-            { \
-                return (*mock)($call_args); \
-            } \
+        static c *instance; \
 \
-            return real($call_args); \
-        } \
-\
-        static c *mock; \
-\
-        mutable ::testing::FunctionMocker<F> GMOCK_MOCKER_($i,, n); \
+        ::testing::FunctionMocker<F> mocker; \
 \
         friend GMOCK_RESULT_(, F) n($declare_args); \
-}; \
+};
+
+#define IMPLEMENT_FUNCTION_MOCK$i(c, n, F) \
+c::c() { \
+    instance = this; \
+} \
 \
-c *c::mock; \
+c::~c() { \
+    instance = NULL; \
+} \
+\
+GMOCK_RESULT_(, F) c::operator()($declare_args) { \
+    GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
+    ::testing::internal::Function<F>::ArgumentTuple>::value == $i, \
+     this_method_does_not_take_$i[[]]_argument[[$if i != 1 [[s]]]]); \
+     mocker.SetOwnerAndName(this, #n); \
+     return mocker.Invoke($call_args); \
+} \
+\
+::testing::MockSpec<F>& c::cmock_func($matcher_args) { \
+    mocker.RegisterOwner(this); \
+    return mocker.With($call_args); \
+} \
+\
+c::func_type c::lookup() { \
+    c::func_type real = (c::func_type)dlsym(RTLD_NEXT, #n); \
+    if (real == NULL) { \
+        std::ostringstream msg; \
+        msg << "unable to load "; \
+        msg << #n; \
+        msg << " function symbol"; \
+\
+        throw std::logic_error(msg.str()); \
+    } \
+    return real; \
+} \
+\
+GMOCK_RESULT_(, F) c::call($declare_args) { \
+    if (instance != NULL) { \
+        return (*instance)($call_args); \
+    } \
+\
+    return real($call_args); \
+} \
+\
+c *c::instance = NULL; \
 c::func_type c::real = lookup(); \
 \
 GMOCK_RESULT_(, F) n($declare_args) { \

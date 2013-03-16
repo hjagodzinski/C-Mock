@@ -43,7 +43,7 @@
 #include <sstream>
 #include <stdexcept>
 
-#define MOCK_FUNCTION0(c, n, F) \
+#define DECLARE_FUNCTION_MOCK0(c, n, F) \
 class c \
 { \
     typedef GMOCK_RESULT_(, F) (*func_type)(); \
@@ -51,67 +51,74 @@ class c \
     public: \
         static func_type real; \
 \
-        c() { \
-            mock = this; \
-        } \
+        c(); \
+        ~c(); \
 \
-        ~c() { \
-            mock = NULL; \
-        } \
-\
-        GMOCK_RESULT_(, F) operator()() { \
-            GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
-            ::testing::internal::Function<F>::ArgumentTuple>::value == 0, \
-             this_method_does_not_take_0_arguments); \
-             GMOCK_MOCKER_(0,, n).SetOwnerAndName(this, #n); \
-             return GMOCK_MOCKER_(0,, n).Invoke(); \
-        } \
-\
-        ::testing::MockSpec<F>& \
-        cmock_func() { \
-            GMOCK_MOCKER_(0,, n).RegisterOwner(this); \
-            return GMOCK_MOCKER_(0,, n).With(); \
-        } \
+        GMOCK_RESULT_(, F) operator()(); \
+        ::testing::MockSpec<F>& cmock_func(); \
 \
     private: \
-        static func_type lookup() { \
-            func_type real = (func_type)dlsym(RTLD_NEXT, #n); \
-            if (real == NULL) \
-            { \
-                std::ostringstream msg; \
-                msg << "unable to load "; \
-                msg << #n; \
-                msg << " function symbol"; \
-                throw std::logic_error(msg.str()); \
-            } \
-            return real; \
-        } \
+        static func_type lookup(); \
+        static GMOCK_RESULT_(, F) call(); \
 \
-        static GMOCK_RESULT_(, F) call() \
-        { \
-            if (mock != NULL) \
-            { \
-                return (*mock)(); \
-            } \
+        static c *instance; \
 \
-            return real(); \
-        } \
-\
-        static c *mock; \
-\
-        mutable ::testing::FunctionMocker<F> GMOCK_MOCKER_(0,, n); \
+        ::testing::FunctionMocker<F> mocker; \
 \
         friend GMOCK_RESULT_(, F) n(); \
-}; \
+};
+
+#define IMPLEMENT_FUNCTION_MOCK0(c, n, F) \
+c::c() { \
+    instance = this; \
+} \
 \
-c *c::mock; \
+c::~c() { \
+    instance = NULL; \
+} \
+\
+GMOCK_RESULT_(, F) c::operator()() { \
+    GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
+    ::testing::internal::Function<F>::ArgumentTuple>::value == 0, \
+     this_method_does_not_take_0_arguments); \
+     mocker.SetOwnerAndName(this, #n); \
+     return mocker.Invoke(); \
+} \
+\
+::testing::MockSpec<F>& c::cmock_func() { \
+    mocker.RegisterOwner(this); \
+    return mocker.With(); \
+} \
+\
+c::func_type c::lookup() { \
+    c::func_type real = (c::func_type)dlsym(RTLD_NEXT, #n); \
+    if (real == NULL) { \
+        std::ostringstream msg; \
+        msg << "unable to load "; \
+        msg << #n; \
+        msg << " function symbol"; \
+\
+        throw std::logic_error(msg.str()); \
+    } \
+    return real; \
+} \
+\
+GMOCK_RESULT_(, F) c::call() { \
+    if (instance != NULL) { \
+        return (*instance)(); \
+    } \
+\
+    return real(); \
+} \
+\
+c *c::instance = NULL; \
 c::func_type c::real = lookup(); \
 \
 GMOCK_RESULT_(, F) n() { \
     return c::call(); \
 }
 
-#define MOCK_FUNCTION1(c, n, F) \
+#define DECLARE_FUNCTION_MOCK1(c, n, F) \
 class c \
 { \
     typedef GMOCK_RESULT_(, F) (*func_type)(GMOCK_ARG_(, F, 1) cmock_a1); \
@@ -119,67 +126,74 @@ class c \
     public: \
         static func_type real; \
 \
-        c() { \
-            mock = this; \
-        } \
+        c(); \
+        ~c(); \
 \
-        ~c() { \
-            mock = NULL; \
-        } \
-\
-        GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, F, 1) cmock_a1) { \
-            GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
-            ::testing::internal::Function<F>::ArgumentTuple>::value == 1, \
-             this_method_does_not_take_1_argument); \
-             GMOCK_MOCKER_(1,, n).SetOwnerAndName(this, #n); \
-             return GMOCK_MOCKER_(1,, n).Invoke(cmock_a1); \
-        } \
-\
-        ::testing::MockSpec<F>& \
-        cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1) { \
-            GMOCK_MOCKER_(1,, n).RegisterOwner(this); \
-            return GMOCK_MOCKER_(1,, n).With(cmock_a1); \
-        } \
+        GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, F, 1) cmock_a1); \
+        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1); \
 \
     private: \
-        static func_type lookup() { \
-            func_type real = (func_type)dlsym(RTLD_NEXT, #n); \
-            if (real == NULL) \
-            { \
-                std::ostringstream msg; \
-                msg << "unable to load "; \
-                msg << #n; \
-                msg << " function symbol"; \
-                throw std::logic_error(msg.str()); \
-            } \
-            return real; \
-        } \
+        static func_type lookup(); \
+        static GMOCK_RESULT_(, F) call(GMOCK_ARG_(, F, 1) cmock_a1); \
 \
-        static GMOCK_RESULT_(, F) call(GMOCK_ARG_(, F, 1) cmock_a1) \
-        { \
-            if (mock != NULL) \
-            { \
-                return (*mock)(cmock_a1); \
-            } \
+        static c *instance; \
 \
-            return real(cmock_a1); \
-        } \
-\
-        static c *mock; \
-\
-        mutable ::testing::FunctionMocker<F> GMOCK_MOCKER_(1,, n); \
+        ::testing::FunctionMocker<F> mocker; \
 \
         friend GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1); \
-}; \
+};
+
+#define IMPLEMENT_FUNCTION_MOCK1(c, n, F) \
+c::c() { \
+    instance = this; \
+} \
 \
-c *c::mock; \
+c::~c() { \
+    instance = NULL; \
+} \
+\
+GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, F, 1) cmock_a1) { \
+    GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
+    ::testing::internal::Function<F>::ArgumentTuple>::value == 1, \
+     this_method_does_not_take_1_argument); \
+     mocker.SetOwnerAndName(this, #n); \
+     return mocker.Invoke(cmock_a1); \
+} \
+\
+::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1) { \
+    mocker.RegisterOwner(this); \
+    return mocker.With(cmock_a1); \
+} \
+\
+c::func_type c::lookup() { \
+    c::func_type real = (c::func_type)dlsym(RTLD_NEXT, #n); \
+    if (real == NULL) { \
+        std::ostringstream msg; \
+        msg << "unable to load "; \
+        msg << #n; \
+        msg << " function symbol"; \
+\
+        throw std::logic_error(msg.str()); \
+    } \
+    return real; \
+} \
+\
+GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, F, 1) cmock_a1) { \
+    if (instance != NULL) { \
+        return (*instance)(cmock_a1); \
+    } \
+\
+    return real(cmock_a1); \
+} \
+\
+c *c::instance = NULL; \
 c::func_type c::real = lookup(); \
 \
 GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1) { \
     return c::call(cmock_a1); \
 }
 
-#define MOCK_FUNCTION2(c, n, F) \
+#define DECLARE_FUNCTION_MOCK2(c, n, F) \
 class c \
 { \
     typedef GMOCK_RESULT_(, F) (*func_type)(GMOCK_ARG_(, F, 1) cmock_a1, \
@@ -188,64 +202,74 @@ class c \
     public: \
         static func_type real; \
 \
-        c() { \
-            mock = this; \
-        } \
-\
-        ~c() { \
-            mock = NULL; \
-        } \
+        c(); \
+        ~c(); \
 \
         GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, F, 1) cmock_a1, \
-            GMOCK_ARG_(, F, 2) cmock_a2) { \
-            GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
-            ::testing::internal::Function<F>::ArgumentTuple>::value == 2, \
-             this_method_does_not_take_2_arguments); \
-             GMOCK_MOCKER_(2,, n).SetOwnerAndName(this, #n); \
-             return GMOCK_MOCKER_(2,, n).Invoke(cmock_a1, cmock_a2); \
-        } \
-\
-        ::testing::MockSpec<F>& \
-        cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, GMOCK_MATCHER_(, F, \
-            2) cmock_a2) { \
-            GMOCK_MOCKER_(2,, n).RegisterOwner(this); \
-            return GMOCK_MOCKER_(2,, n).With(cmock_a1, cmock_a2); \
-        } \
+            GMOCK_ARG_(, F, 2) cmock_a2); \
+        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
+            GMOCK_MATCHER_(, F, 2) cmock_a2); \
 \
     private: \
-        static func_type lookup() { \
-            func_type real = (func_type)dlsym(RTLD_NEXT, #n); \
-            if (real == NULL) \
-            { \
-                std::ostringstream msg; \
-                msg << "unable to load "; \
-                msg << #n; \
-                msg << " function symbol"; \
-                throw std::logic_error(msg.str()); \
-            } \
-            return real; \
-        } \
-\
+        static func_type lookup(); \
         static GMOCK_RESULT_(, F) call(GMOCK_ARG_(, F, 1) cmock_a1, \
-            GMOCK_ARG_(, F, 2) cmock_a2) \
-        { \
-            if (mock != NULL) \
-            { \
-                return (*mock)(cmock_a1, cmock_a2); \
-            } \
+            GMOCK_ARG_(, F, 2) cmock_a2); \
 \
-            return real(cmock_a1, cmock_a2); \
-        } \
+        static c *instance; \
 \
-        static c *mock; \
-\
-        mutable ::testing::FunctionMocker<F> GMOCK_MOCKER_(2,, n); \
+        ::testing::FunctionMocker<F> mocker; \
 \
         friend GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, \
             F, 2) cmock_a2); \
-}; \
+};
+
+#define IMPLEMENT_FUNCTION_MOCK2(c, n, F) \
+c::c() { \
+    instance = this; \
+} \
 \
-c *c::mock; \
+c::~c() { \
+    instance = NULL; \
+} \
+\
+GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
+    2) cmock_a2) { \
+    GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
+    ::testing::internal::Function<F>::ArgumentTuple>::value == 2, \
+     this_method_does_not_take_2_arguments); \
+     mocker.SetOwnerAndName(this, #n); \
+     return mocker.Invoke(cmock_a1, cmock_a2); \
+} \
+\
+::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
+    GMOCK_MATCHER_(, F, 2) cmock_a2) { \
+    mocker.RegisterOwner(this); \
+    return mocker.With(cmock_a1, cmock_a2); \
+} \
+\
+c::func_type c::lookup() { \
+    c::func_type real = (c::func_type)dlsym(RTLD_NEXT, #n); \
+    if (real == NULL) { \
+        std::ostringstream msg; \
+        msg << "unable to load "; \
+        msg << #n; \
+        msg << " function symbol"; \
+\
+        throw std::logic_error(msg.str()); \
+    } \
+    return real; \
+} \
+\
+GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
+    2) cmock_a2) { \
+    if (instance != NULL) { \
+        return (*instance)(cmock_a1, cmock_a2); \
+    } \
+\
+    return real(cmock_a1, cmock_a2); \
+} \
+\
+c *c::instance = NULL; \
 c::func_type c::real = lookup(); \
 \
 GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
@@ -253,7 +277,7 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
     return c::call(cmock_a1, cmock_a2); \
 }
 
-#define MOCK_FUNCTION3(c, n, F) \
+#define DECLARE_FUNCTION_MOCK3(c, n, F) \
 class c \
 { \
     typedef GMOCK_RESULT_(, F) (*func_type)(GMOCK_ARG_(, F, 1) cmock_a1, \
@@ -262,64 +286,75 @@ class c \
     public: \
         static func_type real; \
 \
-        c() { \
-            mock = this; \
-        } \
-\
-        ~c() { \
-            mock = NULL; \
-        } \
+        c(); \
+        ~c(); \
 \
         GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, F, 1) cmock_a1, \
-            GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3) { \
-            GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
-            ::testing::internal::Function<F>::ArgumentTuple>::value == 3, \
-             this_method_does_not_take_3_arguments); \
-             GMOCK_MOCKER_(3,, n).SetOwnerAndName(this, #n); \
-             return GMOCK_MOCKER_(3,, n).Invoke(cmock_a1, cmock_a2, cmock_a3); \
-        } \
-\
-        ::testing::MockSpec<F>& \
-        cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, GMOCK_MATCHER_(, F, \
-            2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3) { \
-            GMOCK_MOCKER_(3,, n).RegisterOwner(this); \
-            return GMOCK_MOCKER_(3,, n).With(cmock_a1, cmock_a2, cmock_a3); \
-        } \
+            GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3); \
+        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
+            GMOCK_MATCHER_(, F, 2) cmock_a2, GMOCK_MATCHER_(, F, \
+            3) cmock_a3); \
 \
     private: \
-        static func_type lookup() { \
-            func_type real = (func_type)dlsym(RTLD_NEXT, #n); \
-            if (real == NULL) \
-            { \
-                std::ostringstream msg; \
-                msg << "unable to load "; \
-                msg << #n; \
-                msg << " function symbol"; \
-                throw std::logic_error(msg.str()); \
-            } \
-            return real; \
-        } \
-\
+        static func_type lookup(); \
         static GMOCK_RESULT_(, F) call(GMOCK_ARG_(, F, 1) cmock_a1, \
-            GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3) \
-        { \
-            if (mock != NULL) \
-            { \
-                return (*mock)(cmock_a1, cmock_a2, cmock_a3); \
-            } \
+            GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3); \
 \
-            return real(cmock_a1, cmock_a2, cmock_a3); \
-        } \
+        static c *instance; \
 \
-        static c *mock; \
-\
-        mutable ::testing::FunctionMocker<F> GMOCK_MOCKER_(3,, n); \
+        ::testing::FunctionMocker<F> mocker; \
 \
         friend GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, \
             F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3); \
-}; \
+};
+
+#define IMPLEMENT_FUNCTION_MOCK3(c, n, F) \
+c::c() { \
+    instance = this; \
+} \
 \
-c *c::mock; \
+c::~c() { \
+    instance = NULL; \
+} \
+\
+GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
+    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3) { \
+    GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
+    ::testing::internal::Function<F>::ArgumentTuple>::value == 3, \
+     this_method_does_not_take_3_arguments); \
+     mocker.SetOwnerAndName(this, #n); \
+     return mocker.Invoke(cmock_a1, cmock_a2, cmock_a3); \
+} \
+\
+::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
+    GMOCK_MATCHER_(, F, 2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3) { \
+    mocker.RegisterOwner(this); \
+    return mocker.With(cmock_a1, cmock_a2, cmock_a3); \
+} \
+\
+c::func_type c::lookup() { \
+    c::func_type real = (c::func_type)dlsym(RTLD_NEXT, #n); \
+    if (real == NULL) { \
+        std::ostringstream msg; \
+        msg << "unable to load "; \
+        msg << #n; \
+        msg << " function symbol"; \
+\
+        throw std::logic_error(msg.str()); \
+    } \
+    return real; \
+} \
+\
+GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
+    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3) { \
+    if (instance != NULL) { \
+        return (*instance)(cmock_a1, cmock_a2, cmock_a3); \
+    } \
+\
+    return real(cmock_a1, cmock_a2, cmock_a3); \
+} \
+\
+c *c::instance = NULL; \
 c::func_type c::real = lookup(); \
 \
 GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
@@ -327,7 +362,7 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
     return c::call(cmock_a1, cmock_a2, cmock_a3); \
 }
 
-#define MOCK_FUNCTION4(c, n, F) \
+#define DECLARE_FUNCTION_MOCK4(c, n, F) \
 class c \
 { \
     typedef GMOCK_RESULT_(, F) (*func_type)(GMOCK_ARG_(, F, 1) cmock_a1, \
@@ -337,70 +372,81 @@ class c \
     public: \
         static func_type real; \
 \
-        c() { \
-            mock = this; \
-        } \
-\
-        ~c() { \
-            mock = NULL; \
-        } \
+        c(); \
+        ~c(); \
 \
         GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, F, 1) cmock_a1, \
             GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
-            GMOCK_ARG_(, F, 4) cmock_a4) { \
-            GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
-            ::testing::internal::Function<F>::ArgumentTuple>::value == 4, \
-             this_method_does_not_take_4_arguments); \
-             GMOCK_MOCKER_(4,, n).SetOwnerAndName(this, #n); \
-             return GMOCK_MOCKER_(4,, n).Invoke(cmock_a1, cmock_a2, cmock_a3, \
-                 cmock_a4); \
-        } \
-\
-        ::testing::MockSpec<F>& \
-        cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, GMOCK_MATCHER_(, F, \
-            2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, GMOCK_MATCHER_(, F, \
-            4) cmock_a4) { \
-            GMOCK_MOCKER_(4,, n).RegisterOwner(this); \
-            return GMOCK_MOCKER_(4,, n).With(cmock_a1, cmock_a2, cmock_a3, \
-                cmock_a4); \
-        } \
+            GMOCK_ARG_(, F, 4) cmock_a4); \
+        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
+            GMOCK_MATCHER_(, F, 2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, \
+            GMOCK_MATCHER_(, F, 4) cmock_a4); \
 \
     private: \
-        static func_type lookup() { \
-            func_type real = (func_type)dlsym(RTLD_NEXT, #n); \
-            if (real == NULL) \
-            { \
-                std::ostringstream msg; \
-                msg << "unable to load "; \
-                msg << #n; \
-                msg << " function symbol"; \
-                throw std::logic_error(msg.str()); \
-            } \
-            return real; \
-        } \
-\
+        static func_type lookup(); \
         static GMOCK_RESULT_(, F) call(GMOCK_ARG_(, F, 1) cmock_a1, \
             GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
-            GMOCK_ARG_(, F, 4) cmock_a4) \
-        { \
-            if (mock != NULL) \
-            { \
-                return (*mock)(cmock_a1, cmock_a2, cmock_a3, cmock_a4); \
-            } \
+            GMOCK_ARG_(, F, 4) cmock_a4); \
 \
-            return real(cmock_a1, cmock_a2, cmock_a3, cmock_a4); \
-        } \
+        static c *instance; \
 \
-        static c *mock; \
-\
-        mutable ::testing::FunctionMocker<F> GMOCK_MOCKER_(4,, n); \
+        ::testing::FunctionMocker<F> mocker; \
 \
         friend GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, \
             F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, \
             4) cmock_a4); \
-}; \
+};
+
+#define IMPLEMENT_FUNCTION_MOCK4(c, n, F) \
+c::c() { \
+    instance = this; \
+} \
 \
-c *c::mock; \
+c::~c() { \
+    instance = NULL; \
+} \
+\
+GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
+    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, \
+    4) cmock_a4) { \
+    GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
+    ::testing::internal::Function<F>::ArgumentTuple>::value == 4, \
+     this_method_does_not_take_4_arguments); \
+     mocker.SetOwnerAndName(this, #n); \
+     return mocker.Invoke(cmock_a1, cmock_a2, cmock_a3, cmock_a4); \
+} \
+\
+::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
+    GMOCK_MATCHER_(, F, 2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, \
+    GMOCK_MATCHER_(, F, 4) cmock_a4) { \
+    mocker.RegisterOwner(this); \
+    return mocker.With(cmock_a1, cmock_a2, cmock_a3, cmock_a4); \
+} \
+\
+c::func_type c::lookup() { \
+    c::func_type real = (c::func_type)dlsym(RTLD_NEXT, #n); \
+    if (real == NULL) { \
+        std::ostringstream msg; \
+        msg << "unable to load "; \
+        msg << #n; \
+        msg << " function symbol"; \
+\
+        throw std::logic_error(msg.str()); \
+    } \
+    return real; \
+} \
+\
+GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
+    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, \
+    4) cmock_a4) { \
+    if (instance != NULL) { \
+        return (*instance)(cmock_a1, cmock_a2, cmock_a3, cmock_a4); \
+    } \
+\
+    return real(cmock_a1, cmock_a2, cmock_a3, cmock_a4); \
+} \
+\
+c *c::instance = NULL; \
 c::func_type c::real = lookup(); \
 \
 GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
@@ -409,7 +455,7 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
     return c::call(cmock_a1, cmock_a2, cmock_a3, cmock_a4); \
 }
 
-#define MOCK_FUNCTION5(c, n, F) \
+#define DECLARE_FUNCTION_MOCK5(c, n, F) \
 class c \
 { \
     typedef GMOCK_RESULT_(, F) (*func_type)(GMOCK_ARG_(, F, 1) cmock_a1, \
@@ -419,71 +465,82 @@ class c \
     public: \
         static func_type real; \
 \
-        c() { \
-            mock = this; \
-        } \
-\
-        ~c() { \
-            mock = NULL; \
-        } \
+        c(); \
+        ~c(); \
 \
         GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, F, 1) cmock_a1, \
             GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
-            GMOCK_ARG_(, F, 4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5) { \
-            GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
-            ::testing::internal::Function<F>::ArgumentTuple>::value == 5, \
-             this_method_does_not_take_5_arguments); \
-             GMOCK_MOCKER_(5,, n).SetOwnerAndName(this, #n); \
-             return GMOCK_MOCKER_(5,, n).Invoke(cmock_a1, cmock_a2, cmock_a3, \
-                 cmock_a4, cmock_a5); \
-        } \
-\
-        ::testing::MockSpec<F>& \
-        cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, GMOCK_MATCHER_(, F, \
-            2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, GMOCK_MATCHER_(, F, \
-            4) cmock_a4, GMOCK_MATCHER_(, F, 5) cmock_a5) { \
-            GMOCK_MOCKER_(5,, n).RegisterOwner(this); \
-            return GMOCK_MOCKER_(5,, n).With(cmock_a1, cmock_a2, cmock_a3, \
-                cmock_a4, cmock_a5); \
-        } \
+            GMOCK_ARG_(, F, 4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5); \
+        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
+            GMOCK_MATCHER_(, F, 2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, \
+            GMOCK_MATCHER_(, F, 4) cmock_a4, GMOCK_MATCHER_(, F, \
+            5) cmock_a5); \
 \
     private: \
-        static func_type lookup() { \
-            func_type real = (func_type)dlsym(RTLD_NEXT, #n); \
-            if (real == NULL) \
-            { \
-                std::ostringstream msg; \
-                msg << "unable to load "; \
-                msg << #n; \
-                msg << " function symbol"; \
-                throw std::logic_error(msg.str()); \
-            } \
-            return real; \
-        } \
-\
+        static func_type lookup(); \
         static GMOCK_RESULT_(, F) call(GMOCK_ARG_(, F, 1) cmock_a1, \
             GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
-            GMOCK_ARG_(, F, 4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5) \
-        { \
-            if (mock != NULL) \
-            { \
-                return (*mock)(cmock_a1, cmock_a2, cmock_a3, cmock_a4, \
-                    cmock_a5); \
-            } \
+            GMOCK_ARG_(, F, 4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5); \
 \
-            return real(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5); \
-        } \
+        static c *instance; \
 \
-        static c *mock; \
-\
-        mutable ::testing::FunctionMocker<F> GMOCK_MOCKER_(5,, n); \
+        ::testing::FunctionMocker<F> mocker; \
 \
         friend GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, \
             F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, \
             4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5); \
-}; \
+};
+
+#define IMPLEMENT_FUNCTION_MOCK5(c, n, F) \
+c::c() { \
+    instance = this; \
+} \
 \
-c *c::mock; \
+c::~c() { \
+    instance = NULL; \
+} \
+\
+GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
+    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, 4) cmock_a4, \
+    GMOCK_ARG_(, F, 5) cmock_a5) { \
+    GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
+    ::testing::internal::Function<F>::ArgumentTuple>::value == 5, \
+     this_method_does_not_take_5_arguments); \
+     mocker.SetOwnerAndName(this, #n); \
+     return mocker.Invoke(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5); \
+} \
+\
+::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
+    GMOCK_MATCHER_(, F, 2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, \
+    GMOCK_MATCHER_(, F, 4) cmock_a4, GMOCK_MATCHER_(, F, 5) cmock_a5) { \
+    mocker.RegisterOwner(this); \
+    return mocker.With(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5); \
+} \
+\
+c::func_type c::lookup() { \
+    c::func_type real = (c::func_type)dlsym(RTLD_NEXT, #n); \
+    if (real == NULL) { \
+        std::ostringstream msg; \
+        msg << "unable to load "; \
+        msg << #n; \
+        msg << " function symbol"; \
+\
+        throw std::logic_error(msg.str()); \
+    } \
+    return real; \
+} \
+\
+GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
+    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, 4) cmock_a4, \
+    GMOCK_ARG_(, F, 5) cmock_a5) { \
+    if (instance != NULL) { \
+        return (*instance)(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5); \
+    } \
+\
+    return real(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5); \
+} \
+\
+c *c::instance = NULL; \
 c::func_type c::real = lookup(); \
 \
 GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
@@ -492,7 +549,7 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
     return c::call(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5); \
 }
 
-#define MOCK_FUNCTION6(c, n, F) \
+#define DECLARE_FUNCTION_MOCK6(c, n, F) \
 class c \
 { \
     typedef GMOCK_RESULT_(, F) (*func_type)(GMOCK_ARG_(, F, 1) cmock_a1, \
@@ -503,76 +560,89 @@ class c \
     public: \
         static func_type real; \
 \
-        c() { \
-            mock = this; \
-        } \
-\
-        ~c() { \
-            mock = NULL; \
-        } \
+        c(); \
+        ~c(); \
 \
         GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, F, 1) cmock_a1, \
             GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
             GMOCK_ARG_(, F, 4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, \
-            GMOCK_ARG_(, F, 6) cmock_a6) { \
-            GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
-            ::testing::internal::Function<F>::ArgumentTuple>::value == 6, \
-             this_method_does_not_take_6_arguments); \
-             GMOCK_MOCKER_(6,, n).SetOwnerAndName(this, #n); \
-             return GMOCK_MOCKER_(6,, n).Invoke(cmock_a1, cmock_a2, cmock_a3, \
-                 cmock_a4, cmock_a5, cmock_a6); \
-        } \
-\
-        ::testing::MockSpec<F>& \
-        cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, GMOCK_MATCHER_(, F, \
-            2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, GMOCK_MATCHER_(, F, \
-            4) cmock_a4, GMOCK_MATCHER_(, F, 5) cmock_a5, GMOCK_MATCHER_(, F, \
-            6) cmock_a6) { \
-            GMOCK_MOCKER_(6,, n).RegisterOwner(this); \
-            return GMOCK_MOCKER_(6,, n).With(cmock_a1, cmock_a2, cmock_a3, \
-                cmock_a4, cmock_a5, cmock_a6); \
-        } \
+            GMOCK_ARG_(, F, 6) cmock_a6); \
+        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
+            GMOCK_MATCHER_(, F, 2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, \
+            GMOCK_MATCHER_(, F, 4) cmock_a4, GMOCK_MATCHER_(, F, 5) cmock_a5, \
+            GMOCK_MATCHER_(, F, 6) cmock_a6); \
 \
     private: \
-        static func_type lookup() { \
-            func_type real = (func_type)dlsym(RTLD_NEXT, #n); \
-            if (real == NULL) \
-            { \
-                std::ostringstream msg; \
-                msg << "unable to load "; \
-                msg << #n; \
-                msg << " function symbol"; \
-                throw std::logic_error(msg.str()); \
-            } \
-            return real; \
-        } \
-\
+        static func_type lookup(); \
         static GMOCK_RESULT_(, F) call(GMOCK_ARG_(, F, 1) cmock_a1, \
             GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
             GMOCK_ARG_(, F, 4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, \
-            GMOCK_ARG_(, F, 6) cmock_a6) \
-        { \
-            if (mock != NULL) \
-            { \
-                return (*mock)(cmock_a1, cmock_a2, cmock_a3, cmock_a4, \
-                    cmock_a5, cmock_a6); \
-            } \
+            GMOCK_ARG_(, F, 6) cmock_a6); \
 \
-            return real(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
-                cmock_a6); \
-        } \
+        static c *instance; \
 \
-        static c *mock; \
-\
-        mutable ::testing::FunctionMocker<F> GMOCK_MOCKER_(6,, n); \
+        ::testing::FunctionMocker<F> mocker; \
 \
         friend GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, \
             F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, \
             4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, \
             6) cmock_a6); \
-}; \
+};
+
+#define IMPLEMENT_FUNCTION_MOCK6(c, n, F) \
+c::c() { \
+    instance = this; \
+} \
 \
-c *c::mock; \
+c::~c() { \
+    instance = NULL; \
+} \
+\
+GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
+    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, 4) cmock_a4, \
+    GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, 6) cmock_a6) { \
+    GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
+    ::testing::internal::Function<F>::ArgumentTuple>::value == 6, \
+     this_method_does_not_take_6_arguments); \
+     mocker.SetOwnerAndName(this, #n); \
+     return mocker.Invoke(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
+         cmock_a6); \
+} \
+\
+::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
+    GMOCK_MATCHER_(, F, 2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, \
+    GMOCK_MATCHER_(, F, 4) cmock_a4, GMOCK_MATCHER_(, F, 5) cmock_a5, \
+    GMOCK_MATCHER_(, F, 6) cmock_a6) { \
+    mocker.RegisterOwner(this); \
+    return mocker.With(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
+        cmock_a6); \
+} \
+\
+c::func_type c::lookup() { \
+    c::func_type real = (c::func_type)dlsym(RTLD_NEXT, #n); \
+    if (real == NULL) { \
+        std::ostringstream msg; \
+        msg << "unable to load "; \
+        msg << #n; \
+        msg << " function symbol"; \
+\
+        throw std::logic_error(msg.str()); \
+    } \
+    return real; \
+} \
+\
+GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
+    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, 4) cmock_a4, \
+    GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, 6) cmock_a6) { \
+    if (instance != NULL) { \
+        return (*instance)(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
+            cmock_a6); \
+    } \
+\
+    return real(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, cmock_a6); \
+} \
+\
+c *c::instance = NULL; \
 c::func_type c::real = lookup(); \
 \
 GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
@@ -582,7 +652,7 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
         cmock_a6); \
 }
 
-#define MOCK_FUNCTION7(c, n, F) \
+#define DECLARE_FUNCTION_MOCK7(c, n, F) \
 class c \
 { \
     typedef GMOCK_RESULT_(, F) (*func_type)(GMOCK_ARG_(, F, 1) cmock_a1, \
@@ -593,76 +663,93 @@ class c \
     public: \
         static func_type real; \
 \
-        c() { \
-            mock = this; \
-        } \
-\
-        ~c() { \
-            mock = NULL; \
-        } \
+        c(); \
+        ~c(); \
 \
         GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, F, 1) cmock_a1, \
             GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
             GMOCK_ARG_(, F, 4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, \
-            GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, 7) cmock_a7) { \
-            GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
-            ::testing::internal::Function<F>::ArgumentTuple>::value == 7, \
-             this_method_does_not_take_7_arguments); \
-             GMOCK_MOCKER_(7,, n).SetOwnerAndName(this, #n); \
-             return GMOCK_MOCKER_(7,, n).Invoke(cmock_a1, cmock_a2, cmock_a3, \
-                 cmock_a4, cmock_a5, cmock_a6, cmock_a7); \
-        } \
-\
-        ::testing::MockSpec<F>& \
-        cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, GMOCK_MATCHER_(, F, \
-            2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, GMOCK_MATCHER_(, F, \
-            4) cmock_a4, GMOCK_MATCHER_(, F, 5) cmock_a5, GMOCK_MATCHER_(, F, \
-            6) cmock_a6, GMOCK_MATCHER_(, F, 7) cmock_a7) { \
-            GMOCK_MOCKER_(7,, n).RegisterOwner(this); \
-            return GMOCK_MOCKER_(7,, n).With(cmock_a1, cmock_a2, cmock_a3, \
-                cmock_a4, cmock_a5, cmock_a6, cmock_a7); \
-        } \
+            GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, 7) cmock_a7); \
+        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
+            GMOCK_MATCHER_(, F, 2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, \
+            GMOCK_MATCHER_(, F, 4) cmock_a4, GMOCK_MATCHER_(, F, 5) cmock_a5, \
+            GMOCK_MATCHER_(, F, 6) cmock_a6, GMOCK_MATCHER_(, F, \
+            7) cmock_a7); \
 \
     private: \
-        static func_type lookup() { \
-            func_type real = (func_type)dlsym(RTLD_NEXT, #n); \
-            if (real == NULL) \
-            { \
-                std::ostringstream msg; \
-                msg << "unable to load "; \
-                msg << #n; \
-                msg << " function symbol"; \
-                throw std::logic_error(msg.str()); \
-            } \
-            return real; \
-        } \
-\
+        static func_type lookup(); \
         static GMOCK_RESULT_(, F) call(GMOCK_ARG_(, F, 1) cmock_a1, \
             GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
             GMOCK_ARG_(, F, 4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, \
-            GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, 7) cmock_a7) \
-        { \
-            if (mock != NULL) \
-            { \
-                return (*mock)(cmock_a1, cmock_a2, cmock_a3, cmock_a4, \
-                    cmock_a5, cmock_a6, cmock_a7); \
-            } \
+            GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, 7) cmock_a7); \
 \
-            return real(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
-                cmock_a6, cmock_a7); \
-        } \
+        static c *instance; \
 \
-        static c *mock; \
-\
-        mutable ::testing::FunctionMocker<F> GMOCK_MOCKER_(7,, n); \
+        ::testing::FunctionMocker<F> mocker; \
 \
         friend GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, \
             F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, \
             4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, \
             6) cmock_a6, GMOCK_ARG_(, F, 7) cmock_a7); \
-}; \
+};
+
+#define IMPLEMENT_FUNCTION_MOCK7(c, n, F) \
+c::c() { \
+    instance = this; \
+} \
 \
-c *c::mock; \
+c::~c() { \
+    instance = NULL; \
+} \
+\
+GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
+    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, 4) cmock_a4, \
+    GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, \
+    7) cmock_a7) { \
+    GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
+    ::testing::internal::Function<F>::ArgumentTuple>::value == 7, \
+     this_method_does_not_take_7_arguments); \
+     mocker.SetOwnerAndName(this, #n); \
+     return mocker.Invoke(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
+         cmock_a6, cmock_a7); \
+} \
+\
+::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
+    GMOCK_MATCHER_(, F, 2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, \
+    GMOCK_MATCHER_(, F, 4) cmock_a4, GMOCK_MATCHER_(, F, 5) cmock_a5, \
+    GMOCK_MATCHER_(, F, 6) cmock_a6, GMOCK_MATCHER_(, F, 7) cmock_a7) { \
+    mocker.RegisterOwner(this); \
+    return mocker.With(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
+        cmock_a6, cmock_a7); \
+} \
+\
+c::func_type c::lookup() { \
+    c::func_type real = (c::func_type)dlsym(RTLD_NEXT, #n); \
+    if (real == NULL) { \
+        std::ostringstream msg; \
+        msg << "unable to load "; \
+        msg << #n; \
+        msg << " function symbol"; \
+\
+        throw std::logic_error(msg.str()); \
+    } \
+    return real; \
+} \
+\
+GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
+    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, 4) cmock_a4, \
+    GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, \
+    7) cmock_a7) { \
+    if (instance != NULL) { \
+        return (*instance)(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
+            cmock_a6, cmock_a7); \
+    } \
+\
+    return real(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, cmock_a6, \
+        cmock_a7); \
+} \
+\
+c *c::instance = NULL; \
 c::func_type c::real = lookup(); \
 \
 GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
@@ -673,7 +760,7 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
         cmock_a6, cmock_a7); \
 }
 
-#define MOCK_FUNCTION8(c, n, F) \
+#define DECLARE_FUNCTION_MOCK8(c, n, F) \
 class c \
 { \
     typedef GMOCK_RESULT_(, F) (*func_type)(GMOCK_ARG_(, F, 1) cmock_a1, \
@@ -685,80 +772,97 @@ class c \
     public: \
         static func_type real; \
 \
-        c() { \
-            mock = this; \
-        } \
-\
-        ~c() { \
-            mock = NULL; \
-        } \
+        c(); \
+        ~c(); \
 \
         GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, F, 1) cmock_a1, \
             GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
             GMOCK_ARG_(, F, 4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, \
             GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, 7) cmock_a7, \
-            GMOCK_ARG_(, F, 8) cmock_a8) { \
-            GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
-            ::testing::internal::Function<F>::ArgumentTuple>::value == 8, \
-             this_method_does_not_take_8_arguments); \
-             GMOCK_MOCKER_(8,, n).SetOwnerAndName(this, #n); \
-             return GMOCK_MOCKER_(8,, n).Invoke(cmock_a1, cmock_a2, cmock_a3, \
-                 cmock_a4, cmock_a5, cmock_a6, cmock_a7, cmock_a8); \
-        } \
-\
-        ::testing::MockSpec<F>& \
-        cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, GMOCK_MATCHER_(, F, \
-            2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, GMOCK_MATCHER_(, F, \
-            4) cmock_a4, GMOCK_MATCHER_(, F, 5) cmock_a5, GMOCK_MATCHER_(, F, \
-            6) cmock_a6, GMOCK_MATCHER_(, F, 7) cmock_a7, GMOCK_MATCHER_(, F, \
-            8) cmock_a8) { \
-            GMOCK_MOCKER_(8,, n).RegisterOwner(this); \
-            return GMOCK_MOCKER_(8,, n).With(cmock_a1, cmock_a2, cmock_a3, \
-                cmock_a4, cmock_a5, cmock_a6, cmock_a7, cmock_a8); \
-        } \
+            GMOCK_ARG_(, F, 8) cmock_a8); \
+        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
+            GMOCK_MATCHER_(, F, 2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, \
+            GMOCK_MATCHER_(, F, 4) cmock_a4, GMOCK_MATCHER_(, F, 5) cmock_a5, \
+            GMOCK_MATCHER_(, F, 6) cmock_a6, GMOCK_MATCHER_(, F, 7) cmock_a7, \
+            GMOCK_MATCHER_(, F, 8) cmock_a8); \
 \
     private: \
-        static func_type lookup() { \
-            func_type real = (func_type)dlsym(RTLD_NEXT, #n); \
-            if (real == NULL) \
-            { \
-                std::ostringstream msg; \
-                msg << "unable to load "; \
-                msg << #n; \
-                msg << " function symbol"; \
-                throw std::logic_error(msg.str()); \
-            } \
-            return real; \
-        } \
-\
+        static func_type lookup(); \
         static GMOCK_RESULT_(, F) call(GMOCK_ARG_(, F, 1) cmock_a1, \
             GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
             GMOCK_ARG_(, F, 4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, \
             GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, 7) cmock_a7, \
-            GMOCK_ARG_(, F, 8) cmock_a8) \
-        { \
-            if (mock != NULL) \
-            { \
-                return (*mock)(cmock_a1, cmock_a2, cmock_a3, cmock_a4, \
-                    cmock_a5, cmock_a6, cmock_a7, cmock_a8); \
-            } \
+            GMOCK_ARG_(, F, 8) cmock_a8); \
 \
-            return real(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
-                cmock_a6, cmock_a7, cmock_a8); \
-        } \
+        static c *instance; \
 \
-        static c *mock; \
-\
-        mutable ::testing::FunctionMocker<F> GMOCK_MOCKER_(8,, n); \
+        ::testing::FunctionMocker<F> mocker; \
 \
         friend GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, \
             F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, \
             4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, \
             6) cmock_a6, GMOCK_ARG_(, F, 7) cmock_a7, GMOCK_ARG_(, F, \
             8) cmock_a8); \
-}; \
+};
+
+#define IMPLEMENT_FUNCTION_MOCK8(c, n, F) \
+c::c() { \
+    instance = this; \
+} \
 \
-c *c::mock; \
+c::~c() { \
+    instance = NULL; \
+} \
+\
+GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
+    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, 4) cmock_a4, \
+    GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, \
+    7) cmock_a7, GMOCK_ARG_(, F, 8) cmock_a8) { \
+    GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
+    ::testing::internal::Function<F>::ArgumentTuple>::value == 8, \
+     this_method_does_not_take_8_arguments); \
+     mocker.SetOwnerAndName(this, #n); \
+     return mocker.Invoke(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
+         cmock_a6, cmock_a7, cmock_a8); \
+} \
+\
+::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
+    GMOCK_MATCHER_(, F, 2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, \
+    GMOCK_MATCHER_(, F, 4) cmock_a4, GMOCK_MATCHER_(, F, 5) cmock_a5, \
+    GMOCK_MATCHER_(, F, 6) cmock_a6, GMOCK_MATCHER_(, F, 7) cmock_a7, \
+    GMOCK_MATCHER_(, F, 8) cmock_a8) { \
+    mocker.RegisterOwner(this); \
+    return mocker.With(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
+        cmock_a6, cmock_a7, cmock_a8); \
+} \
+\
+c::func_type c::lookup() { \
+    c::func_type real = (c::func_type)dlsym(RTLD_NEXT, #n); \
+    if (real == NULL) { \
+        std::ostringstream msg; \
+        msg << "unable to load "; \
+        msg << #n; \
+        msg << " function symbol"; \
+\
+        throw std::logic_error(msg.str()); \
+    } \
+    return real; \
+} \
+\
+GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
+    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, 4) cmock_a4, \
+    GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, \
+    7) cmock_a7, GMOCK_ARG_(, F, 8) cmock_a8) { \
+    if (instance != NULL) { \
+        return (*instance)(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
+            cmock_a6, cmock_a7, cmock_a8); \
+    } \
+\
+    return real(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, cmock_a6, \
+        cmock_a7, cmock_a8); \
+} \
+\
+c *c::instance = NULL; \
 c::func_type c::real = lookup(); \
 \
 GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
@@ -769,7 +873,7 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
         cmock_a6, cmock_a7, cmock_a8); \
 }
 
-#define MOCK_FUNCTION9(c, n, F) \
+#define DECLARE_FUNCTION_MOCK9(c, n, F) \
 class c \
 { \
     typedef GMOCK_RESULT_(, F) (*func_type)(GMOCK_ARG_(, F, 1) cmock_a1, \
@@ -781,82 +885,100 @@ class c \
     public: \
         static func_type real; \
 \
-        c() { \
-            mock = this; \
-        } \
-\
-        ~c() { \
-            mock = NULL; \
-        } \
+        c(); \
+        ~c(); \
 \
         GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, F, 1) cmock_a1, \
             GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
             GMOCK_ARG_(, F, 4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, \
             GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, 7) cmock_a7, \
-            GMOCK_ARG_(, F, 8) cmock_a8, GMOCK_ARG_(, F, 9) cmock_a9) { \
-            GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
-            ::testing::internal::Function<F>::ArgumentTuple>::value == 9, \
-             this_method_does_not_take_9_arguments); \
-             GMOCK_MOCKER_(9,, n).SetOwnerAndName(this, #n); \
-             return GMOCK_MOCKER_(9,, n).Invoke(cmock_a1, cmock_a2, cmock_a3, \
-                 cmock_a4, cmock_a5, cmock_a6, cmock_a7, cmock_a8, cmock_a9); \
-                 \
-        } \
-\
-        ::testing::MockSpec<F>& \
-        cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, GMOCK_MATCHER_(, F, \
-            2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, GMOCK_MATCHER_(, F, \
-            4) cmock_a4, GMOCK_MATCHER_(, F, 5) cmock_a5, GMOCK_MATCHER_(, F, \
-            6) cmock_a6, GMOCK_MATCHER_(, F, 7) cmock_a7, GMOCK_MATCHER_(, F, \
-            8) cmock_a8, GMOCK_MATCHER_(, F, 9) cmock_a9) { \
-            GMOCK_MOCKER_(9,, n).RegisterOwner(this); \
-            return GMOCK_MOCKER_(9,, n).With(cmock_a1, cmock_a2, cmock_a3, \
-                cmock_a4, cmock_a5, cmock_a6, cmock_a7, cmock_a8, cmock_a9); \
-                \
-        } \
+            GMOCK_ARG_(, F, 8) cmock_a8, GMOCK_ARG_(, F, 9) cmock_a9); \
+        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
+            GMOCK_MATCHER_(, F, 2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, \
+            GMOCK_MATCHER_(, F, 4) cmock_a4, GMOCK_MATCHER_(, F, 5) cmock_a5, \
+            GMOCK_MATCHER_(, F, 6) cmock_a6, GMOCK_MATCHER_(, F, 7) cmock_a7, \
+            GMOCK_MATCHER_(, F, 8) cmock_a8, GMOCK_MATCHER_(, F, \
+            9) cmock_a9); \
 \
     private: \
-        static func_type lookup() { \
-            func_type real = (func_type)dlsym(RTLD_NEXT, #n); \
-            if (real == NULL) \
-            { \
-                std::ostringstream msg; \
-                msg << "unable to load "; \
-                msg << #n; \
-                msg << " function symbol"; \
-                throw std::logic_error(msg.str()); \
-            } \
-            return real; \
-        } \
-\
+        static func_type lookup(); \
         static GMOCK_RESULT_(, F) call(GMOCK_ARG_(, F, 1) cmock_a1, \
             GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
             GMOCK_ARG_(, F, 4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, \
             GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, 7) cmock_a7, \
-            GMOCK_ARG_(, F, 8) cmock_a8, GMOCK_ARG_(, F, 9) cmock_a9) \
-        { \
-            if (mock != NULL) \
-            { \
-                return (*mock)(cmock_a1, cmock_a2, cmock_a3, cmock_a4, \
-                    cmock_a5, cmock_a6, cmock_a7, cmock_a8, cmock_a9); \
-            } \
+            GMOCK_ARG_(, F, 8) cmock_a8, GMOCK_ARG_(, F, 9) cmock_a9); \
 \
-            return real(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
-                cmock_a6, cmock_a7, cmock_a8, cmock_a9); \
-        } \
+        static c *instance; \
 \
-        static c *mock; \
-\
-        mutable ::testing::FunctionMocker<F> GMOCK_MOCKER_(9,, n); \
+        ::testing::FunctionMocker<F> mocker; \
 \
         friend GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, \
             F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, \
             4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, \
             6) cmock_a6, GMOCK_ARG_(, F, 7) cmock_a7, GMOCK_ARG_(, F, \
             8) cmock_a8, GMOCK_ARG_(, F, 9) cmock_a9); \
-}; \
+};
+
+#define IMPLEMENT_FUNCTION_MOCK9(c, n, F) \
+c::c() { \
+    instance = this; \
+} \
 \
-c *c::mock; \
+c::~c() { \
+    instance = NULL; \
+} \
+\
+GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
+    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, 4) cmock_a4, \
+    GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, \
+    7) cmock_a7, GMOCK_ARG_(, F, 8) cmock_a8, GMOCK_ARG_(, F, \
+    9) cmock_a9) { \
+    GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
+    ::testing::internal::Function<F>::ArgumentTuple>::value == 9, \
+     this_method_does_not_take_9_arguments); \
+     mocker.SetOwnerAndName(this, #n); \
+     return mocker.Invoke(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
+         cmock_a6, cmock_a7, cmock_a8, cmock_a9); \
+} \
+\
+::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
+    GMOCK_MATCHER_(, F, 2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, \
+    GMOCK_MATCHER_(, F, 4) cmock_a4, GMOCK_MATCHER_(, F, 5) cmock_a5, \
+    GMOCK_MATCHER_(, F, 6) cmock_a6, GMOCK_MATCHER_(, F, 7) cmock_a7, \
+    GMOCK_MATCHER_(, F, 8) cmock_a8, GMOCK_MATCHER_(, F, 9) cmock_a9) { \
+    mocker.RegisterOwner(this); \
+    return mocker.With(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
+        cmock_a6, cmock_a7, cmock_a8, cmock_a9); \
+} \
+\
+c::func_type c::lookup() { \
+    c::func_type real = (c::func_type)dlsym(RTLD_NEXT, #n); \
+    if (real == NULL) { \
+        std::ostringstream msg; \
+        msg << "unable to load "; \
+        msg << #n; \
+        msg << " function symbol"; \
+\
+        throw std::logic_error(msg.str()); \
+    } \
+    return real; \
+} \
+\
+GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
+    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, 4) cmock_a4, \
+    GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, \
+    7) cmock_a7, GMOCK_ARG_(, F, 8) cmock_a8, GMOCK_ARG_(, F, \
+    9) cmock_a9) { \
+    if (instance != NULL) { \
+        return (*instance)(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
+            cmock_a6, cmock_a7, cmock_a8, cmock_a9); \
+    } \
+\
+    return real(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, cmock_a6, \
+        cmock_a7, cmock_a8, cmock_a9); \
+} \
+\
+c *c::instance = NULL; \
 c::func_type c::real = lookup(); \
 \
 GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
@@ -868,7 +990,7 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
         cmock_a6, cmock_a7, cmock_a8, cmock_a9); \
 }
 
-#define MOCK_FUNCTION10(c, n, F) \
+#define DECLARE_FUNCTION_MOCK10(c, n, F) \
 class c \
 { \
     typedef GMOCK_RESULT_(, F) (*func_type)(GMOCK_ARG_(, F, 1) cmock_a1, \
@@ -881,77 +1003,34 @@ class c \
     public: \
         static func_type real; \
 \
-        c() { \
-            mock = this; \
-        } \
-\
-        ~c() { \
-            mock = NULL; \
-        } \
+        c(); \
+        ~c(); \
 \
         GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, F, 1) cmock_a1, \
             GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
             GMOCK_ARG_(, F, 4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, \
             GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, 7) cmock_a7, \
             GMOCK_ARG_(, F, 8) cmock_a8, GMOCK_ARG_(, F, 9) cmock_a9, \
-            GMOCK_ARG_(, F, 10) cmock_a10) { \
-            GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
-            ::testing::internal::Function<F>::ArgumentTuple>::value == 10, \
-             this_method_does_not_take_10_arguments); \
-             GMOCK_MOCKER_(10,, n).SetOwnerAndName(this, #n); \
-             return GMOCK_MOCKER_(10,, n).Invoke(cmock_a1, cmock_a2, \
-                 cmock_a3, cmock_a4, cmock_a5, cmock_a6, cmock_a7, cmock_a8, \
-                 cmock_a9, cmock_a10); \
-        } \
-\
-        ::testing::MockSpec<F>& \
-        cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, GMOCK_MATCHER_(, F, \
-            2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, GMOCK_MATCHER_(, F, \
-            4) cmock_a4, GMOCK_MATCHER_(, F, 5) cmock_a5, GMOCK_MATCHER_(, F, \
-            6) cmock_a6, GMOCK_MATCHER_(, F, 7) cmock_a7, GMOCK_MATCHER_(, F, \
-            8) cmock_a8, GMOCK_MATCHER_(, F, 9) cmock_a9, GMOCK_MATCHER_(, F, \
-            10) cmock_a10) { \
-            GMOCK_MOCKER_(10,, n).RegisterOwner(this); \
-            return GMOCK_MOCKER_(10,, n).With(cmock_a1, cmock_a2, cmock_a3, \
-                cmock_a4, cmock_a5, cmock_a6, cmock_a7, cmock_a8, cmock_a9, \
-                cmock_a10); \
-        } \
+            GMOCK_ARG_(, F, 10) cmock_a10); \
+        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
+            GMOCK_MATCHER_(, F, 2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, \
+            GMOCK_MATCHER_(, F, 4) cmock_a4, GMOCK_MATCHER_(, F, 5) cmock_a5, \
+            GMOCK_MATCHER_(, F, 6) cmock_a6, GMOCK_MATCHER_(, F, 7) cmock_a7, \
+            GMOCK_MATCHER_(, F, 8) cmock_a8, GMOCK_MATCHER_(, F, 9) cmock_a9, \
+            GMOCK_MATCHER_(, F, 10) cmock_a10); \
 \
     private: \
-        static func_type lookup() { \
-            func_type real = (func_type)dlsym(RTLD_NEXT, #n); \
-            if (real == NULL) \
-            { \
-                std::ostringstream msg; \
-                msg << "unable to load "; \
-                msg << #n; \
-                msg << " function symbol"; \
-                throw std::logic_error(msg.str()); \
-            } \
-            return real; \
-        } \
-\
+        static func_type lookup(); \
         static GMOCK_RESULT_(, F) call(GMOCK_ARG_(, F, 1) cmock_a1, \
             GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
             GMOCK_ARG_(, F, 4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, \
             GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, 7) cmock_a7, \
             GMOCK_ARG_(, F, 8) cmock_a8, GMOCK_ARG_(, F, 9) cmock_a9, \
-            GMOCK_ARG_(, F, 10) cmock_a10) \
-        { \
-            if (mock != NULL) \
-            { \
-                return (*mock)(cmock_a1, cmock_a2, cmock_a3, cmock_a4, \
-                    cmock_a5, cmock_a6, cmock_a7, cmock_a8, cmock_a9, \
-                    cmock_a10); \
-            } \
+            GMOCK_ARG_(, F, 10) cmock_a10); \
 \
-            return real(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
-                cmock_a6, cmock_a7, cmock_a8, cmock_a9, cmock_a10); \
-        } \
+        static c *instance; \
 \
-        static c *mock; \
-\
-        mutable ::testing::FunctionMocker<F> GMOCK_MOCKER_(10,, n); \
+        ::testing::FunctionMocker<F> mocker; \
 \
         friend GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, \
             F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, \
@@ -959,9 +1038,69 @@ class c \
             6) cmock_a6, GMOCK_ARG_(, F, 7) cmock_a7, GMOCK_ARG_(, F, \
             8) cmock_a8, GMOCK_ARG_(, F, 9) cmock_a9, GMOCK_ARG_(, F, \
             10) cmock_a10); \
-}; \
+};
+
+#define IMPLEMENT_FUNCTION_MOCK10(c, n, F) \
+c::c() { \
+    instance = this; \
+} \
 \
-c *c::mock; \
+c::~c() { \
+    instance = NULL; \
+} \
+\
+GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
+    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, 4) cmock_a4, \
+    GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, \
+    7) cmock_a7, GMOCK_ARG_(, F, 8) cmock_a8, GMOCK_ARG_(, F, 9) cmock_a9, \
+    GMOCK_ARG_(, F, 10) cmock_a10) { \
+    GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
+    ::testing::internal::Function<F>::ArgumentTuple>::value == 10, \
+     this_method_does_not_take_10_arguments); \
+     mocker.SetOwnerAndName(this, #n); \
+     return mocker.Invoke(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
+         cmock_a6, cmock_a7, cmock_a8, cmock_a9, cmock_a10); \
+} \
+\
+::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
+    GMOCK_MATCHER_(, F, 2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, \
+    GMOCK_MATCHER_(, F, 4) cmock_a4, GMOCK_MATCHER_(, F, 5) cmock_a5, \
+    GMOCK_MATCHER_(, F, 6) cmock_a6, GMOCK_MATCHER_(, F, 7) cmock_a7, \
+    GMOCK_MATCHER_(, F, 8) cmock_a8, GMOCK_MATCHER_(, F, 9) cmock_a9, \
+    GMOCK_MATCHER_(, F, 10) cmock_a10) { \
+    mocker.RegisterOwner(this); \
+    return mocker.With(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
+        cmock_a6, cmock_a7, cmock_a8, cmock_a9, cmock_a10); \
+} \
+\
+c::func_type c::lookup() { \
+    c::func_type real = (c::func_type)dlsym(RTLD_NEXT, #n); \
+    if (real == NULL) { \
+        std::ostringstream msg; \
+        msg << "unable to load "; \
+        msg << #n; \
+        msg << " function symbol"; \
+\
+        throw std::logic_error(msg.str()); \
+    } \
+    return real; \
+} \
+\
+GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
+    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, 4) cmock_a4, \
+    GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, \
+    7) cmock_a7, GMOCK_ARG_(, F, 8) cmock_a8, GMOCK_ARG_(, F, 9) cmock_a9, \
+    GMOCK_ARG_(, F, 10) cmock_a10) { \
+    if (instance != NULL) { \
+        return (*instance)(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
+            cmock_a6, cmock_a7, cmock_a8, cmock_a9, cmock_a10); \
+    } \
+\
+    return real(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, cmock_a6, \
+        cmock_a7, cmock_a8, cmock_a9, cmock_a10); \
+} \
+\
+c *c::instance = NULL; \
 c::func_type c::real = lookup(); \
 \
 GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
