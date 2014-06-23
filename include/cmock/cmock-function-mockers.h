@@ -121,7 +121,7 @@ GMOCK_RESULT_(, F) n() { \
 #define DECLARE_FUNCTION_MOCK1(c, n, F) \
 class c \
 { \
-    typedef GMOCK_RESULT_(, F) (*func_type)(GMOCK_ARG_(, F, 1) cmock_a1); \
+    typedef GMOCK_RESULT_(, F) (*func_type)(GMOCK_ARG_(, 1, F) cmock_a1); \
 \
     public: \
         static func_type real; \
@@ -129,18 +129,18 @@ class c \
         c(); \
         ~c(); \
 \
-        GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, F, 1) cmock_a1); \
-        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1); \
+        GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, 1, F) cmock_a1); \
+        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1); \
 \
     private: \
         static func_type lookup(); \
-        static GMOCK_RESULT_(, F) call(GMOCK_ARG_(, F, 1) cmock_a1); \
+        static GMOCK_RESULT_(, F) call(GMOCK_ARG_(, 1, F) cmock_a1); \
 \
         static c *instance; \
 \
         ::testing::FunctionMocker<F> mocker; \
 \
-        friend GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1); \
+        friend GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1); \
 };
 
 #define IMPLEMENT_FUNCTION_MOCK1(c, n, F) \
@@ -152,7 +152,7 @@ c::~c() { \
     instance = NULL; \
 } \
 \
-GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, F, 1) cmock_a1) { \
+GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, 1, F) cmock_a1) { \
     GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
     ::testing::internal::Function<F>::ArgumentTuple>::value == 1, \
      this_method_does_not_take_1_argument); \
@@ -160,7 +160,7 @@ GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, F, 1) cmock_a1) { \
      return mocker.Invoke(cmock_a1); \
 } \
 \
-::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1) { \
+::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1) { \
     mocker.RegisterOwner(this); \
     return mocker.With(cmock_a1); \
 } \
@@ -178,7 +178,7 @@ c::func_type c::lookup() { \
     return real; \
 } \
 \
-GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, F, 1) cmock_a1) { \
+GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, 1, F) cmock_a1) { \
     if (instance != NULL) { \
         return (*instance)(cmock_a1); \
     } \
@@ -189,15 +189,15 @@ GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, F, 1) cmock_a1) { \
 c *c::instance = NULL; \
 c::func_type c::real = lookup(); \
 \
-GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1) { \
+GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1) { \
     return c::call(cmock_a1); \
 }
 
 #define DECLARE_FUNCTION_MOCK2(c, n, F) \
 class c \
 { \
-    typedef GMOCK_RESULT_(, F) (*func_type)(GMOCK_ARG_(, F, 1) cmock_a1, \
-        GMOCK_ARG_(, F, 2) cmock_a2); \
+    typedef GMOCK_RESULT_(, F) (*func_type)(GMOCK_ARG_(, 1, F) cmock_a1, \
+        GMOCK_ARG_(, 2, F) cmock_a2); \
 \
     public: \
         static func_type real; \
@@ -205,22 +205,22 @@ class c \
         c(); \
         ~c(); \
 \
-        GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, F, 1) cmock_a1, \
-            GMOCK_ARG_(, F, 2) cmock_a2); \
-        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
-            GMOCK_MATCHER_(, F, 2) cmock_a2); \
+        GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, 1, F) cmock_a1, \
+            GMOCK_ARG_(, 2, F) cmock_a2); \
+        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+            GMOCK_MATCHER_(, 2, F) cmock_a2); \
 \
     private: \
         static func_type lookup(); \
-        static GMOCK_RESULT_(, F) call(GMOCK_ARG_(, F, 1) cmock_a1, \
-            GMOCK_ARG_(, F, 2) cmock_a2); \
+        static GMOCK_RESULT_(, F) call(GMOCK_ARG_(, 1, F) cmock_a1, \
+            GMOCK_ARG_(, 2, F) cmock_a2); \
 \
         static c *instance; \
 \
         ::testing::FunctionMocker<F> mocker; \
 \
-        friend GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, \
-            F, 2) cmock_a2); \
+        friend GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, \
+            2, F) cmock_a2); \
 };
 
 #define IMPLEMENT_FUNCTION_MOCK2(c, n, F) \
@@ -232,8 +232,8 @@ c::~c() { \
     instance = NULL; \
 } \
 \
-GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
-    2) cmock_a2) { \
+GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
+    F) cmock_a2) { \
     GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
     ::testing::internal::Function<F>::ArgumentTuple>::value == 2, \
      this_method_does_not_take_2_arguments); \
@@ -241,8 +241,8 @@ GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
      return mocker.Invoke(cmock_a1, cmock_a2); \
 } \
 \
-::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
-    GMOCK_MATCHER_(, F, 2) cmock_a2) { \
+::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+    GMOCK_MATCHER_(, 2, F) cmock_a2) { \
     mocker.RegisterOwner(this); \
     return mocker.With(cmock_a1, cmock_a2); \
 } \
@@ -260,8 +260,8 @@ c::func_type c::lookup() { \
     return real; \
 } \
 \
-GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
-    2) cmock_a2) { \
+GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
+    F) cmock_a2) { \
     if (instance != NULL) { \
         return (*instance)(cmock_a1, cmock_a2); \
     } \
@@ -272,16 +272,16 @@ GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
 c *c::instance = NULL; \
 c::func_type c::real = lookup(); \
 \
-GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
-    2) cmock_a2) { \
+GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
+    F) cmock_a2) { \
     return c::call(cmock_a1, cmock_a2); \
 }
 
 #define DECLARE_FUNCTION_MOCK3(c, n, F) \
 class c \
 { \
-    typedef GMOCK_RESULT_(, F) (*func_type)(GMOCK_ARG_(, F, 1) cmock_a1, \
-        GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3); \
+    typedef GMOCK_RESULT_(, F) (*func_type)(GMOCK_ARG_(, 1, F) cmock_a1, \
+        GMOCK_ARG_(, 2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3); \
 \
     public: \
         static func_type real; \
@@ -289,23 +289,23 @@ class c \
         c(); \
         ~c(); \
 \
-        GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, F, 1) cmock_a1, \
-            GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3); \
-        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
-            GMOCK_MATCHER_(, F, 2) cmock_a2, GMOCK_MATCHER_(, F, \
-            3) cmock_a3); \
+        GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, 1, F) cmock_a1, \
+            GMOCK_ARG_(, 2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3); \
+        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+            GMOCK_MATCHER_(, 2, F) cmock_a2, GMOCK_MATCHER_(, 3, \
+            F) cmock_a3); \
 \
     private: \
         static func_type lookup(); \
-        static GMOCK_RESULT_(, F) call(GMOCK_ARG_(, F, 1) cmock_a1, \
-            GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3); \
+        static GMOCK_RESULT_(, F) call(GMOCK_ARG_(, 1, F) cmock_a1, \
+            GMOCK_ARG_(, 2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3); \
 \
         static c *instance; \
 \
         ::testing::FunctionMocker<F> mocker; \
 \
-        friend GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, \
-            F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3); \
+        friend GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, \
+            2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3); \
 };
 
 #define IMPLEMENT_FUNCTION_MOCK3(c, n, F) \
@@ -317,8 +317,8 @@ c::~c() { \
     instance = NULL; \
 } \
 \
-GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
-    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3) { \
+GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
+    F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3) { \
     GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
     ::testing::internal::Function<F>::ArgumentTuple>::value == 3, \
      this_method_does_not_take_3_arguments); \
@@ -326,8 +326,8 @@ GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
      return mocker.Invoke(cmock_a1, cmock_a2, cmock_a3); \
 } \
 \
-::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
-    GMOCK_MATCHER_(, F, 2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3) { \
+::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+    GMOCK_MATCHER_(, 2, F) cmock_a2, GMOCK_MATCHER_(, 3, F) cmock_a3) { \
     mocker.RegisterOwner(this); \
     return mocker.With(cmock_a1, cmock_a2, cmock_a3); \
 } \
@@ -345,8 +345,8 @@ c::func_type c::lookup() { \
     return real; \
 } \
 \
-GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
-    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3) { \
+GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
+    F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3) { \
     if (instance != NULL) { \
         return (*instance)(cmock_a1, cmock_a2, cmock_a3); \
     } \
@@ -357,17 +357,17 @@ GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
 c *c::instance = NULL; \
 c::func_type c::real = lookup(); \
 \
-GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
-    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3) { \
+GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
+    F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3) { \
     return c::call(cmock_a1, cmock_a2, cmock_a3); \
 }
 
 #define DECLARE_FUNCTION_MOCK4(c, n, F) \
 class c \
 { \
-    typedef GMOCK_RESULT_(, F) (*func_type)(GMOCK_ARG_(, F, 1) cmock_a1, \
-        GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
-        GMOCK_ARG_(, F, 4) cmock_a4); \
+    typedef GMOCK_RESULT_(, F) (*func_type)(GMOCK_ARG_(, 1, F) cmock_a1, \
+        GMOCK_ARG_(, 2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, \
+        GMOCK_ARG_(, 4, F) cmock_a4); \
 \
     public: \
         static func_type real; \
@@ -375,26 +375,26 @@ class c \
         c(); \
         ~c(); \
 \
-        GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, F, 1) cmock_a1, \
-            GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
-            GMOCK_ARG_(, F, 4) cmock_a4); \
-        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
-            GMOCK_MATCHER_(, F, 2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, \
-            GMOCK_MATCHER_(, F, 4) cmock_a4); \
+        GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, 1, F) cmock_a1, \
+            GMOCK_ARG_(, 2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, \
+            GMOCK_ARG_(, 4, F) cmock_a4); \
+        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+            GMOCK_MATCHER_(, 2, F) cmock_a2, GMOCK_MATCHER_(, 3, F) cmock_a3, \
+            GMOCK_MATCHER_(, 4, F) cmock_a4); \
 \
     private: \
         static func_type lookup(); \
-        static GMOCK_RESULT_(, F) call(GMOCK_ARG_(, F, 1) cmock_a1, \
-            GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
-            GMOCK_ARG_(, F, 4) cmock_a4); \
+        static GMOCK_RESULT_(, F) call(GMOCK_ARG_(, 1, F) cmock_a1, \
+            GMOCK_ARG_(, 2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, \
+            GMOCK_ARG_(, 4, F) cmock_a4); \
 \
         static c *instance; \
 \
         ::testing::FunctionMocker<F> mocker; \
 \
-        friend GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, \
-            F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, \
-            4) cmock_a4); \
+        friend GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, \
+            2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, \
+            F) cmock_a4); \
 };
 
 #define IMPLEMENT_FUNCTION_MOCK4(c, n, F) \
@@ -406,9 +406,9 @@ c::~c() { \
     instance = NULL; \
 } \
 \
-GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
-    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, \
-    4) cmock_a4) { \
+GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
+    F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, \
+    F) cmock_a4) { \
     GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
     ::testing::internal::Function<F>::ArgumentTuple>::value == 4, \
      this_method_does_not_take_4_arguments); \
@@ -416,9 +416,9 @@ GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
      return mocker.Invoke(cmock_a1, cmock_a2, cmock_a3, cmock_a4); \
 } \
 \
-::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
-    GMOCK_MATCHER_(, F, 2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, \
-    GMOCK_MATCHER_(, F, 4) cmock_a4) { \
+::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+    GMOCK_MATCHER_(, 2, F) cmock_a2, GMOCK_MATCHER_(, 3, F) cmock_a3, \
+    GMOCK_MATCHER_(, 4, F) cmock_a4) { \
     mocker.RegisterOwner(this); \
     return mocker.With(cmock_a1, cmock_a2, cmock_a3, cmock_a4); \
 } \
@@ -436,9 +436,9 @@ c::func_type c::lookup() { \
     return real; \
 } \
 \
-GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
-    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, \
-    4) cmock_a4) { \
+GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
+    F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, \
+    F) cmock_a4) { \
     if (instance != NULL) { \
         return (*instance)(cmock_a1, cmock_a2, cmock_a3, cmock_a4); \
     } \
@@ -449,18 +449,18 @@ GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
 c *c::instance = NULL; \
 c::func_type c::real = lookup(); \
 \
-GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
-    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, \
-    4) cmock_a4) { \
+GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
+    F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, \
+    F) cmock_a4) { \
     return c::call(cmock_a1, cmock_a2, cmock_a3, cmock_a4); \
 }
 
 #define DECLARE_FUNCTION_MOCK5(c, n, F) \
 class c \
 { \
-    typedef GMOCK_RESULT_(, F) (*func_type)(GMOCK_ARG_(, F, 1) cmock_a1, \
-        GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
-        GMOCK_ARG_(, F, 4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5); \
+    typedef GMOCK_RESULT_(, F) (*func_type)(GMOCK_ARG_(, 1, F) cmock_a1, \
+        GMOCK_ARG_(, 2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, \
+        GMOCK_ARG_(, 4, F) cmock_a4, GMOCK_ARG_(, 5, F) cmock_a5); \
 \
     public: \
         static func_type real; \
@@ -468,27 +468,27 @@ class c \
         c(); \
         ~c(); \
 \
-        GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, F, 1) cmock_a1, \
-            GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
-            GMOCK_ARG_(, F, 4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5); \
-        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
-            GMOCK_MATCHER_(, F, 2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, \
-            GMOCK_MATCHER_(, F, 4) cmock_a4, GMOCK_MATCHER_(, F, \
-            5) cmock_a5); \
+        GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, 1, F) cmock_a1, \
+            GMOCK_ARG_(, 2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, \
+            GMOCK_ARG_(, 4, F) cmock_a4, GMOCK_ARG_(, 5, F) cmock_a5); \
+        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+            GMOCK_MATCHER_(, 2, F) cmock_a2, GMOCK_MATCHER_(, 3, F) cmock_a3, \
+            GMOCK_MATCHER_(, 4, F) cmock_a4, GMOCK_MATCHER_(, 5, \
+            F) cmock_a5); \
 \
     private: \
         static func_type lookup(); \
-        static GMOCK_RESULT_(, F) call(GMOCK_ARG_(, F, 1) cmock_a1, \
-            GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
-            GMOCK_ARG_(, F, 4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5); \
+        static GMOCK_RESULT_(, F) call(GMOCK_ARG_(, 1, F) cmock_a1, \
+            GMOCK_ARG_(, 2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, \
+            GMOCK_ARG_(, 4, F) cmock_a4, GMOCK_ARG_(, 5, F) cmock_a5); \
 \
         static c *instance; \
 \
         ::testing::FunctionMocker<F> mocker; \
 \
-        friend GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, \
-            F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, \
-            4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5); \
+        friend GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, \
+            2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, \
+            F) cmock_a4, GMOCK_ARG_(, 5, F) cmock_a5); \
 };
 
 #define IMPLEMENT_FUNCTION_MOCK5(c, n, F) \
@@ -500,9 +500,9 @@ c::~c() { \
     instance = NULL; \
 } \
 \
-GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
-    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, 4) cmock_a4, \
-    GMOCK_ARG_(, F, 5) cmock_a5) { \
+GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
+    F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
+    GMOCK_ARG_(, 5, F) cmock_a5) { \
     GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
     ::testing::internal::Function<F>::ArgumentTuple>::value == 5, \
      this_method_does_not_take_5_arguments); \
@@ -510,9 +510,9 @@ GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
      return mocker.Invoke(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5); \
 } \
 \
-::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
-    GMOCK_MATCHER_(, F, 2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, \
-    GMOCK_MATCHER_(, F, 4) cmock_a4, GMOCK_MATCHER_(, F, 5) cmock_a5) { \
+::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+    GMOCK_MATCHER_(, 2, F) cmock_a2, GMOCK_MATCHER_(, 3, F) cmock_a3, \
+    GMOCK_MATCHER_(, 4, F) cmock_a4, GMOCK_MATCHER_(, 5, F) cmock_a5) { \
     mocker.RegisterOwner(this); \
     return mocker.With(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5); \
 } \
@@ -530,9 +530,9 @@ c::func_type c::lookup() { \
     return real; \
 } \
 \
-GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
-    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, 4) cmock_a4, \
-    GMOCK_ARG_(, F, 5) cmock_a5) { \
+GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
+    F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
+    GMOCK_ARG_(, 5, F) cmock_a5) { \
     if (instance != NULL) { \
         return (*instance)(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5); \
     } \
@@ -543,19 +543,19 @@ GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
 c *c::instance = NULL; \
 c::func_type c::real = lookup(); \
 \
-GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
-    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, 4) cmock_a4, \
-    GMOCK_ARG_(, F, 5) cmock_a5) { \
+GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
+    F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
+    GMOCK_ARG_(, 5, F) cmock_a5) { \
     return c::call(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5); \
 }
 
 #define DECLARE_FUNCTION_MOCK6(c, n, F) \
 class c \
 { \
-    typedef GMOCK_RESULT_(, F) (*func_type)(GMOCK_ARG_(, F, 1) cmock_a1, \
-        GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
-        GMOCK_ARG_(, F, 4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, \
-        GMOCK_ARG_(, F, 6) cmock_a6); \
+    typedef GMOCK_RESULT_(, F) (*func_type)(GMOCK_ARG_(, 1, F) cmock_a1, \
+        GMOCK_ARG_(, 2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, \
+        GMOCK_ARG_(, 4, F) cmock_a4, GMOCK_ARG_(, 5, F) cmock_a5, \
+        GMOCK_ARG_(, 6, F) cmock_a6); \
 \
     public: \
         static func_type real; \
@@ -563,30 +563,30 @@ class c \
         c(); \
         ~c(); \
 \
-        GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, F, 1) cmock_a1, \
-            GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
-            GMOCK_ARG_(, F, 4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, \
-            GMOCK_ARG_(, F, 6) cmock_a6); \
-        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
-            GMOCK_MATCHER_(, F, 2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, \
-            GMOCK_MATCHER_(, F, 4) cmock_a4, GMOCK_MATCHER_(, F, 5) cmock_a5, \
-            GMOCK_MATCHER_(, F, 6) cmock_a6); \
+        GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, 1, F) cmock_a1, \
+            GMOCK_ARG_(, 2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, \
+            GMOCK_ARG_(, 4, F) cmock_a4, GMOCK_ARG_(, 5, F) cmock_a5, \
+            GMOCK_ARG_(, 6, F) cmock_a6); \
+        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+            GMOCK_MATCHER_(, 2, F) cmock_a2, GMOCK_MATCHER_(, 3, F) cmock_a3, \
+            GMOCK_MATCHER_(, 4, F) cmock_a4, GMOCK_MATCHER_(, 5, F) cmock_a5, \
+            GMOCK_MATCHER_(, 6, F) cmock_a6); \
 \
     private: \
         static func_type lookup(); \
-        static GMOCK_RESULT_(, F) call(GMOCK_ARG_(, F, 1) cmock_a1, \
-            GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
-            GMOCK_ARG_(, F, 4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, \
-            GMOCK_ARG_(, F, 6) cmock_a6); \
+        static GMOCK_RESULT_(, F) call(GMOCK_ARG_(, 1, F) cmock_a1, \
+            GMOCK_ARG_(, 2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, \
+            GMOCK_ARG_(, 4, F) cmock_a4, GMOCK_ARG_(, 5, F) cmock_a5, \
+            GMOCK_ARG_(, 6, F) cmock_a6); \
 \
         static c *instance; \
 \
         ::testing::FunctionMocker<F> mocker; \
 \
-        friend GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, \
-            F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, \
-            4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, \
-            6) cmock_a6); \
+        friend GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, \
+            2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, \
+            F) cmock_a4, GMOCK_ARG_(, 5, F) cmock_a5, GMOCK_ARG_(, 6, \
+            F) cmock_a6); \
 };
 
 #define IMPLEMENT_FUNCTION_MOCK6(c, n, F) \
@@ -598,9 +598,9 @@ c::~c() { \
     instance = NULL; \
 } \
 \
-GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
-    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, 4) cmock_a4, \
-    GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, 6) cmock_a6) { \
+GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
+    F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
+    GMOCK_ARG_(, 5, F) cmock_a5, GMOCK_ARG_(, 6, F) cmock_a6) { \
     GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
     ::testing::internal::Function<F>::ArgumentTuple>::value == 6, \
      this_method_does_not_take_6_arguments); \
@@ -609,10 +609,10 @@ GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
          cmock_a6); \
 } \
 \
-::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
-    GMOCK_MATCHER_(, F, 2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, \
-    GMOCK_MATCHER_(, F, 4) cmock_a4, GMOCK_MATCHER_(, F, 5) cmock_a5, \
-    GMOCK_MATCHER_(, F, 6) cmock_a6) { \
+::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+    GMOCK_MATCHER_(, 2, F) cmock_a2, GMOCK_MATCHER_(, 3, F) cmock_a3, \
+    GMOCK_MATCHER_(, 4, F) cmock_a4, GMOCK_MATCHER_(, 5, F) cmock_a5, \
+    GMOCK_MATCHER_(, 6, F) cmock_a6) { \
     mocker.RegisterOwner(this); \
     return mocker.With(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
         cmock_a6); \
@@ -631,9 +631,9 @@ c::func_type c::lookup() { \
     return real; \
 } \
 \
-GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
-    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, 4) cmock_a4, \
-    GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, 6) cmock_a6) { \
+GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
+    F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
+    GMOCK_ARG_(, 5, F) cmock_a5, GMOCK_ARG_(, 6, F) cmock_a6) { \
     if (instance != NULL) { \
         return (*instance)(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
             cmock_a6); \
@@ -645,9 +645,9 @@ GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
 c *c::instance = NULL; \
 c::func_type c::real = lookup(); \
 \
-GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
-    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, 4) cmock_a4, \
-    GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, 6) cmock_a6) { \
+GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
+    F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
+    GMOCK_ARG_(, 5, F) cmock_a5, GMOCK_ARG_(, 6, F) cmock_a6) { \
     return c::call(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
         cmock_a6); \
 }
@@ -655,10 +655,10 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
 #define DECLARE_FUNCTION_MOCK7(c, n, F) \
 class c \
 { \
-    typedef GMOCK_RESULT_(, F) (*func_type)(GMOCK_ARG_(, F, 1) cmock_a1, \
-        GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
-        GMOCK_ARG_(, F, 4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, \
-        GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, 7) cmock_a7); \
+    typedef GMOCK_RESULT_(, F) (*func_type)(GMOCK_ARG_(, 1, F) cmock_a1, \
+        GMOCK_ARG_(, 2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, \
+        GMOCK_ARG_(, 4, F) cmock_a4, GMOCK_ARG_(, 5, F) cmock_a5, \
+        GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, 7, F) cmock_a7); \
 \
     public: \
         static func_type real; \
@@ -666,31 +666,31 @@ class c \
         c(); \
         ~c(); \
 \
-        GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, F, 1) cmock_a1, \
-            GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
-            GMOCK_ARG_(, F, 4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, \
-            GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, 7) cmock_a7); \
-        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
-            GMOCK_MATCHER_(, F, 2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, \
-            GMOCK_MATCHER_(, F, 4) cmock_a4, GMOCK_MATCHER_(, F, 5) cmock_a5, \
-            GMOCK_MATCHER_(, F, 6) cmock_a6, GMOCK_MATCHER_(, F, \
-            7) cmock_a7); \
+        GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, 1, F) cmock_a1, \
+            GMOCK_ARG_(, 2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, \
+            GMOCK_ARG_(, 4, F) cmock_a4, GMOCK_ARG_(, 5, F) cmock_a5, \
+            GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, 7, F) cmock_a7); \
+        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+            GMOCK_MATCHER_(, 2, F) cmock_a2, GMOCK_MATCHER_(, 3, F) cmock_a3, \
+            GMOCK_MATCHER_(, 4, F) cmock_a4, GMOCK_MATCHER_(, 5, F) cmock_a5, \
+            GMOCK_MATCHER_(, 6, F) cmock_a6, GMOCK_MATCHER_(, 7, \
+            F) cmock_a7); \
 \
     private: \
         static func_type lookup(); \
-        static GMOCK_RESULT_(, F) call(GMOCK_ARG_(, F, 1) cmock_a1, \
-            GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
-            GMOCK_ARG_(, F, 4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, \
-            GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, 7) cmock_a7); \
+        static GMOCK_RESULT_(, F) call(GMOCK_ARG_(, 1, F) cmock_a1, \
+            GMOCK_ARG_(, 2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, \
+            GMOCK_ARG_(, 4, F) cmock_a4, GMOCK_ARG_(, 5, F) cmock_a5, \
+            GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, 7, F) cmock_a7); \
 \
         static c *instance; \
 \
         ::testing::FunctionMocker<F> mocker; \
 \
-        friend GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, \
-            F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, \
-            4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, \
-            6) cmock_a6, GMOCK_ARG_(, F, 7) cmock_a7); \
+        friend GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, \
+            2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, \
+            F) cmock_a4, GMOCK_ARG_(, 5, F) cmock_a5, GMOCK_ARG_(, 6, \
+            F) cmock_a6, GMOCK_ARG_(, 7, F) cmock_a7); \
 };
 
 #define IMPLEMENT_FUNCTION_MOCK7(c, n, F) \
@@ -702,10 +702,10 @@ c::~c() { \
     instance = NULL; \
 } \
 \
-GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
-    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, 4) cmock_a4, \
-    GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, \
-    7) cmock_a7) { \
+GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
+    F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
+    GMOCK_ARG_(, 5, F) cmock_a5, GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, 7, \
+    F) cmock_a7) { \
     GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
     ::testing::internal::Function<F>::ArgumentTuple>::value == 7, \
      this_method_does_not_take_7_arguments); \
@@ -714,10 +714,10 @@ GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
          cmock_a6, cmock_a7); \
 } \
 \
-::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
-    GMOCK_MATCHER_(, F, 2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, \
-    GMOCK_MATCHER_(, F, 4) cmock_a4, GMOCK_MATCHER_(, F, 5) cmock_a5, \
-    GMOCK_MATCHER_(, F, 6) cmock_a6, GMOCK_MATCHER_(, F, 7) cmock_a7) { \
+::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+    GMOCK_MATCHER_(, 2, F) cmock_a2, GMOCK_MATCHER_(, 3, F) cmock_a3, \
+    GMOCK_MATCHER_(, 4, F) cmock_a4, GMOCK_MATCHER_(, 5, F) cmock_a5, \
+    GMOCK_MATCHER_(, 6, F) cmock_a6, GMOCK_MATCHER_(, 7, F) cmock_a7) { \
     mocker.RegisterOwner(this); \
     return mocker.With(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
         cmock_a6, cmock_a7); \
@@ -736,10 +736,10 @@ c::func_type c::lookup() { \
     return real; \
 } \
 \
-GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
-    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, 4) cmock_a4, \
-    GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, \
-    7) cmock_a7) { \
+GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
+    F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
+    GMOCK_ARG_(, 5, F) cmock_a5, GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, 7, \
+    F) cmock_a7) { \
     if (instance != NULL) { \
         return (*instance)(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
             cmock_a6, cmock_a7); \
@@ -752,10 +752,10 @@ GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
 c *c::instance = NULL; \
 c::func_type c::real = lookup(); \
 \
-GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
-    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, 4) cmock_a4, \
-    GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, \
-    7) cmock_a7) { \
+GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
+    F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
+    GMOCK_ARG_(, 5, F) cmock_a5, GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, 7, \
+    F) cmock_a7) { \
     return c::call(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
         cmock_a6, cmock_a7); \
 }
@@ -763,11 +763,11 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
 #define DECLARE_FUNCTION_MOCK8(c, n, F) \
 class c \
 { \
-    typedef GMOCK_RESULT_(, F) (*func_type)(GMOCK_ARG_(, F, 1) cmock_a1, \
-        GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
-        GMOCK_ARG_(, F, 4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, \
-        GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, 7) cmock_a7, \
-        GMOCK_ARG_(, F, 8) cmock_a8); \
+    typedef GMOCK_RESULT_(, F) (*func_type)(GMOCK_ARG_(, 1, F) cmock_a1, \
+        GMOCK_ARG_(, 2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, \
+        GMOCK_ARG_(, 4, F) cmock_a4, GMOCK_ARG_(, 5, F) cmock_a5, \
+        GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, 7, F) cmock_a7, \
+        GMOCK_ARG_(, 8, F) cmock_a8); \
 \
     public: \
         static func_type real; \
@@ -775,34 +775,34 @@ class c \
         c(); \
         ~c(); \
 \
-        GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, F, 1) cmock_a1, \
-            GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
-            GMOCK_ARG_(, F, 4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, \
-            GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, 7) cmock_a7, \
-            GMOCK_ARG_(, F, 8) cmock_a8); \
-        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
-            GMOCK_MATCHER_(, F, 2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, \
-            GMOCK_MATCHER_(, F, 4) cmock_a4, GMOCK_MATCHER_(, F, 5) cmock_a5, \
-            GMOCK_MATCHER_(, F, 6) cmock_a6, GMOCK_MATCHER_(, F, 7) cmock_a7, \
-            GMOCK_MATCHER_(, F, 8) cmock_a8); \
+        GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, 1, F) cmock_a1, \
+            GMOCK_ARG_(, 2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, \
+            GMOCK_ARG_(, 4, F) cmock_a4, GMOCK_ARG_(, 5, F) cmock_a5, \
+            GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, 7, F) cmock_a7, \
+            GMOCK_ARG_(, 8, F) cmock_a8); \
+        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+            GMOCK_MATCHER_(, 2, F) cmock_a2, GMOCK_MATCHER_(, 3, F) cmock_a3, \
+            GMOCK_MATCHER_(, 4, F) cmock_a4, GMOCK_MATCHER_(, 5, F) cmock_a5, \
+            GMOCK_MATCHER_(, 6, F) cmock_a6, GMOCK_MATCHER_(, 7, F) cmock_a7, \
+            GMOCK_MATCHER_(, 8, F) cmock_a8); \
 \
     private: \
         static func_type lookup(); \
-        static GMOCK_RESULT_(, F) call(GMOCK_ARG_(, F, 1) cmock_a1, \
-            GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
-            GMOCK_ARG_(, F, 4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, \
-            GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, 7) cmock_a7, \
-            GMOCK_ARG_(, F, 8) cmock_a8); \
+        static GMOCK_RESULT_(, F) call(GMOCK_ARG_(, 1, F) cmock_a1, \
+            GMOCK_ARG_(, 2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, \
+            GMOCK_ARG_(, 4, F) cmock_a4, GMOCK_ARG_(, 5, F) cmock_a5, \
+            GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, 7, F) cmock_a7, \
+            GMOCK_ARG_(, 8, F) cmock_a8); \
 \
         static c *instance; \
 \
         ::testing::FunctionMocker<F> mocker; \
 \
-        friend GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, \
-            F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, \
-            4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, \
-            6) cmock_a6, GMOCK_ARG_(, F, 7) cmock_a7, GMOCK_ARG_(, F, \
-            8) cmock_a8); \
+        friend GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, \
+            2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, \
+            F) cmock_a4, GMOCK_ARG_(, 5, F) cmock_a5, GMOCK_ARG_(, 6, \
+            F) cmock_a6, GMOCK_ARG_(, 7, F) cmock_a7, GMOCK_ARG_(, 8, \
+            F) cmock_a8); \
 };
 
 #define IMPLEMENT_FUNCTION_MOCK8(c, n, F) \
@@ -814,10 +814,10 @@ c::~c() { \
     instance = NULL; \
 } \
 \
-GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
-    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, 4) cmock_a4, \
-    GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, \
-    7) cmock_a7, GMOCK_ARG_(, F, 8) cmock_a8) { \
+GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
+    F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
+    GMOCK_ARG_(, 5, F) cmock_a5, GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, 7, \
+    F) cmock_a7, GMOCK_ARG_(, 8, F) cmock_a8) { \
     GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
     ::testing::internal::Function<F>::ArgumentTuple>::value == 8, \
      this_method_does_not_take_8_arguments); \
@@ -826,11 +826,11 @@ GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
          cmock_a6, cmock_a7, cmock_a8); \
 } \
 \
-::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
-    GMOCK_MATCHER_(, F, 2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, \
-    GMOCK_MATCHER_(, F, 4) cmock_a4, GMOCK_MATCHER_(, F, 5) cmock_a5, \
-    GMOCK_MATCHER_(, F, 6) cmock_a6, GMOCK_MATCHER_(, F, 7) cmock_a7, \
-    GMOCK_MATCHER_(, F, 8) cmock_a8) { \
+::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+    GMOCK_MATCHER_(, 2, F) cmock_a2, GMOCK_MATCHER_(, 3, F) cmock_a3, \
+    GMOCK_MATCHER_(, 4, F) cmock_a4, GMOCK_MATCHER_(, 5, F) cmock_a5, \
+    GMOCK_MATCHER_(, 6, F) cmock_a6, GMOCK_MATCHER_(, 7, F) cmock_a7, \
+    GMOCK_MATCHER_(, 8, F) cmock_a8) { \
     mocker.RegisterOwner(this); \
     return mocker.With(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
         cmock_a6, cmock_a7, cmock_a8); \
@@ -849,10 +849,10 @@ c::func_type c::lookup() { \
     return real; \
 } \
 \
-GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
-    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, 4) cmock_a4, \
-    GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, \
-    7) cmock_a7, GMOCK_ARG_(, F, 8) cmock_a8) { \
+GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
+    F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
+    GMOCK_ARG_(, 5, F) cmock_a5, GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, 7, \
+    F) cmock_a7, GMOCK_ARG_(, 8, F) cmock_a8) { \
     if (instance != NULL) { \
         return (*instance)(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
             cmock_a6, cmock_a7, cmock_a8); \
@@ -865,10 +865,10 @@ GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
 c *c::instance = NULL; \
 c::func_type c::real = lookup(); \
 \
-GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
-    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, 4) cmock_a4, \
-    GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, \
-    7) cmock_a7, GMOCK_ARG_(, F, 8) cmock_a8) { \
+GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
+    F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
+    GMOCK_ARG_(, 5, F) cmock_a5, GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, 7, \
+    F) cmock_a7, GMOCK_ARG_(, 8, F) cmock_a8) { \
     return c::call(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
         cmock_a6, cmock_a7, cmock_a8); \
 }
@@ -876,11 +876,11 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
 #define DECLARE_FUNCTION_MOCK9(c, n, F) \
 class c \
 { \
-    typedef GMOCK_RESULT_(, F) (*func_type)(GMOCK_ARG_(, F, 1) cmock_a1, \
-        GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
-        GMOCK_ARG_(, F, 4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, \
-        GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, 7) cmock_a7, \
-        GMOCK_ARG_(, F, 8) cmock_a8, GMOCK_ARG_(, F, 9) cmock_a9); \
+    typedef GMOCK_RESULT_(, F) (*func_type)(GMOCK_ARG_(, 1, F) cmock_a1, \
+        GMOCK_ARG_(, 2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, \
+        GMOCK_ARG_(, 4, F) cmock_a4, GMOCK_ARG_(, 5, F) cmock_a5, \
+        GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, 7, F) cmock_a7, \
+        GMOCK_ARG_(, 8, F) cmock_a8, GMOCK_ARG_(, 9, F) cmock_a9); \
 \
     public: \
         static func_type real; \
@@ -888,35 +888,35 @@ class c \
         c(); \
         ~c(); \
 \
-        GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, F, 1) cmock_a1, \
-            GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
-            GMOCK_ARG_(, F, 4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, \
-            GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, 7) cmock_a7, \
-            GMOCK_ARG_(, F, 8) cmock_a8, GMOCK_ARG_(, F, 9) cmock_a9); \
-        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
-            GMOCK_MATCHER_(, F, 2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, \
-            GMOCK_MATCHER_(, F, 4) cmock_a4, GMOCK_MATCHER_(, F, 5) cmock_a5, \
-            GMOCK_MATCHER_(, F, 6) cmock_a6, GMOCK_MATCHER_(, F, 7) cmock_a7, \
-            GMOCK_MATCHER_(, F, 8) cmock_a8, GMOCK_MATCHER_(, F, \
-            9) cmock_a9); \
+        GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, 1, F) cmock_a1, \
+            GMOCK_ARG_(, 2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, \
+            GMOCK_ARG_(, 4, F) cmock_a4, GMOCK_ARG_(, 5, F) cmock_a5, \
+            GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, 7, F) cmock_a7, \
+            GMOCK_ARG_(, 8, F) cmock_a8, GMOCK_ARG_(, 9, F) cmock_a9); \
+        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+            GMOCK_MATCHER_(, 2, F) cmock_a2, GMOCK_MATCHER_(, 3, F) cmock_a3, \
+            GMOCK_MATCHER_(, 4, F) cmock_a4, GMOCK_MATCHER_(, 5, F) cmock_a5, \
+            GMOCK_MATCHER_(, 6, F) cmock_a6, GMOCK_MATCHER_(, 7, F) cmock_a7, \
+            GMOCK_MATCHER_(, 8, F) cmock_a8, GMOCK_MATCHER_(, 9, \
+            F) cmock_a9); \
 \
     private: \
         static func_type lookup(); \
-        static GMOCK_RESULT_(, F) call(GMOCK_ARG_(, F, 1) cmock_a1, \
-            GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
-            GMOCK_ARG_(, F, 4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, \
-            GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, 7) cmock_a7, \
-            GMOCK_ARG_(, F, 8) cmock_a8, GMOCK_ARG_(, F, 9) cmock_a9); \
+        static GMOCK_RESULT_(, F) call(GMOCK_ARG_(, 1, F) cmock_a1, \
+            GMOCK_ARG_(, 2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, \
+            GMOCK_ARG_(, 4, F) cmock_a4, GMOCK_ARG_(, 5, F) cmock_a5, \
+            GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, 7, F) cmock_a7, \
+            GMOCK_ARG_(, 8, F) cmock_a8, GMOCK_ARG_(, 9, F) cmock_a9); \
 \
         static c *instance; \
 \
         ::testing::FunctionMocker<F> mocker; \
 \
-        friend GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, \
-            F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, \
-            4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, \
-            6) cmock_a6, GMOCK_ARG_(, F, 7) cmock_a7, GMOCK_ARG_(, F, \
-            8) cmock_a8, GMOCK_ARG_(, F, 9) cmock_a9); \
+        friend GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, \
+            2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, \
+            F) cmock_a4, GMOCK_ARG_(, 5, F) cmock_a5, GMOCK_ARG_(, 6, \
+            F) cmock_a6, GMOCK_ARG_(, 7, F) cmock_a7, GMOCK_ARG_(, 8, \
+            F) cmock_a8, GMOCK_ARG_(, 9, F) cmock_a9); \
 };
 
 #define IMPLEMENT_FUNCTION_MOCK9(c, n, F) \
@@ -928,11 +928,11 @@ c::~c() { \
     instance = NULL; \
 } \
 \
-GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
-    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, 4) cmock_a4, \
-    GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, \
-    7) cmock_a7, GMOCK_ARG_(, F, 8) cmock_a8, GMOCK_ARG_(, F, \
-    9) cmock_a9) { \
+GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
+    F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
+    GMOCK_ARG_(, 5, F) cmock_a5, GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, 7, \
+    F) cmock_a7, GMOCK_ARG_(, 8, F) cmock_a8, GMOCK_ARG_(, 9, \
+    F) cmock_a9) { \
     GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
     ::testing::internal::Function<F>::ArgumentTuple>::value == 9, \
      this_method_does_not_take_9_arguments); \
@@ -941,11 +941,11 @@ GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
          cmock_a6, cmock_a7, cmock_a8, cmock_a9); \
 } \
 \
-::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
-    GMOCK_MATCHER_(, F, 2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, \
-    GMOCK_MATCHER_(, F, 4) cmock_a4, GMOCK_MATCHER_(, F, 5) cmock_a5, \
-    GMOCK_MATCHER_(, F, 6) cmock_a6, GMOCK_MATCHER_(, F, 7) cmock_a7, \
-    GMOCK_MATCHER_(, F, 8) cmock_a8, GMOCK_MATCHER_(, F, 9) cmock_a9) { \
+::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+    GMOCK_MATCHER_(, 2, F) cmock_a2, GMOCK_MATCHER_(, 3, F) cmock_a3, \
+    GMOCK_MATCHER_(, 4, F) cmock_a4, GMOCK_MATCHER_(, 5, F) cmock_a5, \
+    GMOCK_MATCHER_(, 6, F) cmock_a6, GMOCK_MATCHER_(, 7, F) cmock_a7, \
+    GMOCK_MATCHER_(, 8, F) cmock_a8, GMOCK_MATCHER_(, 9, F) cmock_a9) { \
     mocker.RegisterOwner(this); \
     return mocker.With(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
         cmock_a6, cmock_a7, cmock_a8, cmock_a9); \
@@ -964,11 +964,11 @@ c::func_type c::lookup() { \
     return real; \
 } \
 \
-GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
-    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, 4) cmock_a4, \
-    GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, \
-    7) cmock_a7, GMOCK_ARG_(, F, 8) cmock_a8, GMOCK_ARG_(, F, \
-    9) cmock_a9) { \
+GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
+    F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
+    GMOCK_ARG_(, 5, F) cmock_a5, GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, 7, \
+    F) cmock_a7, GMOCK_ARG_(, 8, F) cmock_a8, GMOCK_ARG_(, 9, \
+    F) cmock_a9) { \
     if (instance != NULL) { \
         return (*instance)(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
             cmock_a6, cmock_a7, cmock_a8, cmock_a9); \
@@ -981,11 +981,11 @@ GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
 c *c::instance = NULL; \
 c::func_type c::real = lookup(); \
 \
-GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
-    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, 4) cmock_a4, \
-    GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, \
-    7) cmock_a7, GMOCK_ARG_(, F, 8) cmock_a8, GMOCK_ARG_(, F, \
-    9) cmock_a9) { \
+GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
+    F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
+    GMOCK_ARG_(, 5, F) cmock_a5, GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, 7, \
+    F) cmock_a7, GMOCK_ARG_(, 8, F) cmock_a8, GMOCK_ARG_(, 9, \
+    F) cmock_a9) { \
     return c::call(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
         cmock_a6, cmock_a7, cmock_a8, cmock_a9); \
 }
@@ -993,12 +993,12 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
 #define DECLARE_FUNCTION_MOCK10(c, n, F) \
 class c \
 { \
-    typedef GMOCK_RESULT_(, F) (*func_type)(GMOCK_ARG_(, F, 1) cmock_a1, \
-        GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
-        GMOCK_ARG_(, F, 4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, \
-        GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, 7) cmock_a7, \
-        GMOCK_ARG_(, F, 8) cmock_a8, GMOCK_ARG_(, F, 9) cmock_a9, \
-        GMOCK_ARG_(, F, 10) cmock_a10); \
+    typedef GMOCK_RESULT_(, F) (*func_type)(GMOCK_ARG_(, 1, F) cmock_a1, \
+        GMOCK_ARG_(, 2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, \
+        GMOCK_ARG_(, 4, F) cmock_a4, GMOCK_ARG_(, 5, F) cmock_a5, \
+        GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, 7, F) cmock_a7, \
+        GMOCK_ARG_(, 8, F) cmock_a8, GMOCK_ARG_(, 9, F) cmock_a9, \
+        GMOCK_ARG_(, 10, F) cmock_a10); \
 \
     public: \
         static func_type real; \
@@ -1006,38 +1006,38 @@ class c \
         c(); \
         ~c(); \
 \
-        GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, F, 1) cmock_a1, \
-            GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
-            GMOCK_ARG_(, F, 4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, \
-            GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, 7) cmock_a7, \
-            GMOCK_ARG_(, F, 8) cmock_a8, GMOCK_ARG_(, F, 9) cmock_a9, \
-            GMOCK_ARG_(, F, 10) cmock_a10); \
-        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
-            GMOCK_MATCHER_(, F, 2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, \
-            GMOCK_MATCHER_(, F, 4) cmock_a4, GMOCK_MATCHER_(, F, 5) cmock_a5, \
-            GMOCK_MATCHER_(, F, 6) cmock_a6, GMOCK_MATCHER_(, F, 7) cmock_a7, \
-            GMOCK_MATCHER_(, F, 8) cmock_a8, GMOCK_MATCHER_(, F, 9) cmock_a9, \
-            GMOCK_MATCHER_(, F, 10) cmock_a10); \
+        GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, 1, F) cmock_a1, \
+            GMOCK_ARG_(, 2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, \
+            GMOCK_ARG_(, 4, F) cmock_a4, GMOCK_ARG_(, 5, F) cmock_a5, \
+            GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, 7, F) cmock_a7, \
+            GMOCK_ARG_(, 8, F) cmock_a8, GMOCK_ARG_(, 9, F) cmock_a9, \
+            GMOCK_ARG_(, 10, F) cmock_a10); \
+        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+            GMOCK_MATCHER_(, 2, F) cmock_a2, GMOCK_MATCHER_(, 3, F) cmock_a3, \
+            GMOCK_MATCHER_(, 4, F) cmock_a4, GMOCK_MATCHER_(, 5, F) cmock_a5, \
+            GMOCK_MATCHER_(, 6, F) cmock_a6, GMOCK_MATCHER_(, 7, F) cmock_a7, \
+            GMOCK_MATCHER_(, 8, F) cmock_a8, GMOCK_MATCHER_(, 9, F) cmock_a9, \
+            GMOCK_MATCHER_(, 10, F) cmock_a10); \
 \
     private: \
         static func_type lookup(); \
-        static GMOCK_RESULT_(, F) call(GMOCK_ARG_(, F, 1) cmock_a1, \
-            GMOCK_ARG_(, F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, \
-            GMOCK_ARG_(, F, 4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, \
-            GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, 7) cmock_a7, \
-            GMOCK_ARG_(, F, 8) cmock_a8, GMOCK_ARG_(, F, 9) cmock_a9, \
-            GMOCK_ARG_(, F, 10) cmock_a10); \
+        static GMOCK_RESULT_(, F) call(GMOCK_ARG_(, 1, F) cmock_a1, \
+            GMOCK_ARG_(, 2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, \
+            GMOCK_ARG_(, 4, F) cmock_a4, GMOCK_ARG_(, 5, F) cmock_a5, \
+            GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, 7, F) cmock_a7, \
+            GMOCK_ARG_(, 8, F) cmock_a8, GMOCK_ARG_(, 9, F) cmock_a9, \
+            GMOCK_ARG_(, 10, F) cmock_a10); \
 \
         static c *instance; \
 \
         ::testing::FunctionMocker<F> mocker; \
 \
-        friend GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, \
-            F, 2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, \
-            4) cmock_a4, GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, \
-            6) cmock_a6, GMOCK_ARG_(, F, 7) cmock_a7, GMOCK_ARG_(, F, \
-            8) cmock_a8, GMOCK_ARG_(, F, 9) cmock_a9, GMOCK_ARG_(, F, \
-            10) cmock_a10); \
+        friend GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, \
+            2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, \
+            F) cmock_a4, GMOCK_ARG_(, 5, F) cmock_a5, GMOCK_ARG_(, 6, \
+            F) cmock_a6, GMOCK_ARG_(, 7, F) cmock_a7, GMOCK_ARG_(, 8, \
+            F) cmock_a8, GMOCK_ARG_(, 9, F) cmock_a9, GMOCK_ARG_(, 10, \
+            F) cmock_a10); \
 };
 
 #define IMPLEMENT_FUNCTION_MOCK10(c, n, F) \
@@ -1049,11 +1049,11 @@ c::~c() { \
     instance = NULL; \
 } \
 \
-GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
-    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, 4) cmock_a4, \
-    GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, \
-    7) cmock_a7, GMOCK_ARG_(, F, 8) cmock_a8, GMOCK_ARG_(, F, 9) cmock_a9, \
-    GMOCK_ARG_(, F, 10) cmock_a10) { \
+GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
+    F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
+    GMOCK_ARG_(, 5, F) cmock_a5, GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, 7, \
+    F) cmock_a7, GMOCK_ARG_(, 8, F) cmock_a8, GMOCK_ARG_(, 9, F) cmock_a9, \
+    GMOCK_ARG_(, 10, F) cmock_a10) { \
     GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
     ::testing::internal::Function<F>::ArgumentTuple>::value == 10, \
      this_method_does_not_take_10_arguments); \
@@ -1062,12 +1062,12 @@ GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
          cmock_a6, cmock_a7, cmock_a8, cmock_a9, cmock_a10); \
 } \
 \
-::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, F, 1) cmock_a1, \
-    GMOCK_MATCHER_(, F, 2) cmock_a2, GMOCK_MATCHER_(, F, 3) cmock_a3, \
-    GMOCK_MATCHER_(, F, 4) cmock_a4, GMOCK_MATCHER_(, F, 5) cmock_a5, \
-    GMOCK_MATCHER_(, F, 6) cmock_a6, GMOCK_MATCHER_(, F, 7) cmock_a7, \
-    GMOCK_MATCHER_(, F, 8) cmock_a8, GMOCK_MATCHER_(, F, 9) cmock_a9, \
-    GMOCK_MATCHER_(, F, 10) cmock_a10) { \
+::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+    GMOCK_MATCHER_(, 2, F) cmock_a2, GMOCK_MATCHER_(, 3, F) cmock_a3, \
+    GMOCK_MATCHER_(, 4, F) cmock_a4, GMOCK_MATCHER_(, 5, F) cmock_a5, \
+    GMOCK_MATCHER_(, 6, F) cmock_a6, GMOCK_MATCHER_(, 7, F) cmock_a7, \
+    GMOCK_MATCHER_(, 8, F) cmock_a8, GMOCK_MATCHER_(, 9, F) cmock_a9, \
+    GMOCK_MATCHER_(, 10, F) cmock_a10) { \
     mocker.RegisterOwner(this); \
     return mocker.With(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
         cmock_a6, cmock_a7, cmock_a8, cmock_a9, cmock_a10); \
@@ -1086,11 +1086,11 @@ c::func_type c::lookup() { \
     return real; \
 } \
 \
-GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
-    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, 4) cmock_a4, \
-    GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, \
-    7) cmock_a7, GMOCK_ARG_(, F, 8) cmock_a8, GMOCK_ARG_(, F, 9) cmock_a9, \
-    GMOCK_ARG_(, F, 10) cmock_a10) { \
+GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
+    F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
+    GMOCK_ARG_(, 5, F) cmock_a5, GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, 7, \
+    F) cmock_a7, GMOCK_ARG_(, 8, F) cmock_a8, GMOCK_ARG_(, 9, F) cmock_a9, \
+    GMOCK_ARG_(, 10, F) cmock_a10) { \
     if (instance != NULL) { \
         return (*instance)(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
             cmock_a6, cmock_a7, cmock_a8, cmock_a9, cmock_a10); \
@@ -1103,11 +1103,11 @@ GMOCK_RESULT_(, F) c::call(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
 c *c::instance = NULL; \
 c::func_type c::real = lookup(); \
 \
-GMOCK_RESULT_(, F) n(GMOCK_ARG_(, F, 1) cmock_a1, GMOCK_ARG_(, F, \
-    2) cmock_a2, GMOCK_ARG_(, F, 3) cmock_a3, GMOCK_ARG_(, F, 4) cmock_a4, \
-    GMOCK_ARG_(, F, 5) cmock_a5, GMOCK_ARG_(, F, 6) cmock_a6, GMOCK_ARG_(, F, \
-    7) cmock_a7, GMOCK_ARG_(, F, 8) cmock_a8, GMOCK_ARG_(, F, 9) cmock_a9, \
-    GMOCK_ARG_(, F, 10) cmock_a10) { \
+GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
+    F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
+    GMOCK_ARG_(, 5, F) cmock_a5, GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, 7, \
+    F) cmock_a7, GMOCK_ARG_(, 8, F) cmock_a8, GMOCK_ARG_(, 9, F) cmock_a9, \
+    GMOCK_ARG_(, 10, F) cmock_a10) { \
     return c::call(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5, \
         cmock_a6, cmock_a7, cmock_a8, cmock_a9, cmock_a10); \
 }
