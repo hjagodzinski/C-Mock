@@ -96,14 +96,18 @@ C Mock comes with *cmock-config* tool to hide all these details away from you. R
 
 and
 
-        cmock-config --libs
+        cmock-config --libs [path to libgmock [path to libgtest]]
 
 to get compilations and linker options, respectively.
+
+Note: Since it is [not recommended to install a pre-compiled version of Google Test][4] (or Google Mock) many distributions don't provide such libs anymore. You need to download and compile those libs as described in the README of the Google Mock sources.
+For the linker to find libgmock and libgtest you can pass the paths to those libs to the cmock-config script.
+If you omit the path to libgtest it defaults to "pathToLibgmock/libgtest".
 
 Let's say you built a code under test into *libfoo.so* and put a test code in *bar.cc*. To build your test executable you would run:
 
         g++ `cmock-config --cflags` -c bar.cc -o bar.o
-        g++ `cmock-config --libs` -pthread -lfoo -lgmock -lgtest bar.o -o bar # Google Test requires -pthread
+        g++ `cmock-config --libs` -pthread -lfoo bar.o -o bar # Google Test requires -pthread
 
 When building code under test as a dynamic library it is handy to specify *soname* as an absolute path name. Then when test executable is run no additional environment setup is required for dynamic linking loader to locate your library (i.e. setting LD\_LIBRARY\_PATH).
 
@@ -135,7 +139,9 @@ References
 * [Google Mock][1]
 * [My code calls a static/global function. Can I mock it?][2]
 * [Defeat "Static Cling"][3]
+* [Why is it not recommended to install a pre-compiled copy of Google Test][4]
 
 [1]: http://code.google.com/p/googlemock/ "Google Mock"
 [2]: https://code.google.com/p/googlemock/wiki/FrequentlyAskedQuestions#My_code_calls_a_static/global_function.__Can_I_mock_it? "My code calls a static/global function. Can I mock it?"
 [3]: http://googletesting.blogspot.com/2008/06/defeat-static-cling.html "Defeat "Static Cling""
+[4]: https://code.google.com/p/googletest/wiki/FAQ#Why_is_it_not_recommended_to_install_a_pre-compiled_copy_of_Goog
