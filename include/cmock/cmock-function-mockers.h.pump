@@ -48,8 +48,8 @@ $range i 0..n
 $for i [[
 $range j 1..i
 $var call_args = [[$for j, [[cmock_a$j]]]]
-$var declare_args = [[$for j, [[GMOCK_ARG_(, F, $j) cmock_a$j]]]]
-$var matcher_args = [[$for j, [[GMOCK_MATCHER_(, F, $j) cmock_a$j]]]]
+$var declare_args = [[$for j, [[GMOCK_ARG_(, $j, F) cmock_a$j]]]]
+$var matcher_args = [[$for j, [[GMOCK_MATCHER_(, $j, F) cmock_a$j]]]]
 
 #define DECLARE_FUNCTION_MOCK$i(c, n, F) \
 class c \
