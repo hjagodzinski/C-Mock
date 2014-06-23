@@ -2,7 +2,7 @@ CMOCK=$(shell readlink -f ..)
 CWD=$(shell pwd)
 
 CFLAGS=$(shell $(CMOCK)/bin/cmock-config --cflags)
-LDFLAGS=$(shell $(CMOCK)/bin/cmock-config --libs)
+LDFLAGS=$(shell $(CMOCK)/bin/cmock-config --libs $(GMOCK) $(GTEST))
 
 SRCS=$(shell ls *.cc)
 OBJS=$(SRCS:.cc=.o)
