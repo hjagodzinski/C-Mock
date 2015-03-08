@@ -4,30 +4,36 @@ function print_usage
 {
 	echo "cmock-config provides compilation and linker options required when using with cmock"
 	echo ""
-	echo "$0 OPTION"
+	echo "$0 OPTION [gmock [gtest]]"
 	echo ""
 	echo "Options:"
 	echo -e "\t    --cflags   print compilation options"
 	echo -e "\t    --libs     print linker options"
+	echo -e "\t    additional linker options:"
+	echo -e "\t      [gmock]  path to libgmock"
+	echo -e "\t      [gtest]  path to libgtest"
+	echo -e "\t                defaults to [gmock]/gtest"
 	echo -e "\t-h, --help print help"
 }
 
-if [ $# -ne 1 ]
-then
+if [ $# -lt 1 -o $# -gt 3 ] ; then
 	print_usage 1>&2
 	exit 1
-elif [ "$1" == --cflags ]
-then
+elif [ "$1" == --cflags -a $# -eq 1 ] ; then
 	DIR=`readlink -f $0`
 	DIR=`dirname $DIR`
 	DIR=`dirname $DIR`
 
 	echo "-I$DIR/include"
-elif [ "$1" == --libs ]
-then
-	echo "-rdynamic -Wl,--no-as-needed -ldl"
-elif [ "$1" == -h -o "$1" == --help ]
-then
+elif [ "$1" == --libs -a $# -le 3 ] ; then
+	if [ $# -eq 1 ] ; then
+		echo "-rdynamic -Wl,--no-as-needed -ldl"
+	elif [ $# -eq 2 ] ; then
+		echo "-rdynamic -Wl,--no-as-needed -ldl -L$2 -L$2/gtest"
+	else
+		echo "-rdynamic -Wl,--no-as-needed -ldl -L$2 -L$3"
+	fi
+elif [ "$1" == -h -o "$1" == --help ] ; then
 	print_usage
 else
 	print_usage 1>&2
