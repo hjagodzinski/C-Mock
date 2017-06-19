@@ -45,6 +45,8 @@ Suppose you want to mock *int foo(int, int)* function declared in *foo.h* header
 
 * *foo_mock.h*
 
+            #include <cmock/cmock.h>
+
             #include "foo.h" // use original function declaration
 
             DECLARE_FUNCTION_MOCK2(FooFunctionMock, foo, int(int, int));
