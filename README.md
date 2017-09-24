@@ -143,7 +143,7 @@ References
 * [Defeat "Static Cling"][3]
 * [Why is it not recommended to install a pre-compiled copy of Google Test][4]
 
-[1]: http://code.google.com/p/googlemock/ "Google Mock"
-[2]: https://code.google.com/p/googlemock/wiki/FrequentlyAskedQuestions#My_code_calls_a_static/global_function.__Can_I_mock_it? "My code calls a static/global function. Can I mock it?"
+[1]: https://github.com/google/googlemock "Google Mock"
+[2]: https://github.com/google/googlemock/blob/master/googlemock/docs/FrequentlyAskedQuestions.md#my-code-calls-a-staticglobal-function--can-i-mock-it "My code calls a static/global function. Can I mock it?"
 [3]: http://googletesting.blogspot.com/2008/06/defeat-static-cling.html "Defeat "Static Cling""
 [4]: https://code.google.com/p/googletest/wiki/FAQ#Why_is_it_not_recommended_to_install_a_pre-compiled_copy_of_Goog
