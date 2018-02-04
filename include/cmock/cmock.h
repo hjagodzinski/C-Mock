@@ -36,6 +36,7 @@
 #include <gmock/gmock.h>
 
 #include "cmock-function-mockers.h"
+#include "cmock-function-class-mockers.h"
 #include "cmock-spec-builders.h"
 
 #endif // CMOCK_INCLUDE_CMOCK_CMOCK_H_
