@@ -10,10 +10,10 @@ install:
 	cp -r include/cmock $(PREFIX)/include
 
 test:
-	./test/cmock_test
+	./test/cmock_test GTEST=$(abspath $(GTEST)) _CFLAGS=$(_CFLAGS)
 
 test/cmock_test:
-	make -C test
+	make -C test GTEST=$(abspath $(GTEST))
 
 uninstall:
 	rm $(PREFIX)/bin/cmock-config

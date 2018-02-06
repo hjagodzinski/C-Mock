@@ -94,7 +94,7 @@ $var call_args = [[$for j, [[cmock_a$j]]]]
 $var declare_args = [[$for j, [[GMOCK_ARG_(, $j, F) cmock_a$j]]]]
 $var matcher_args = [[$for j, [[GMOCK_MATCHER_(, $j, F) cmock_a$j]]]]
 
-#define IMPLEMENT_FUNCTION_MOCK_N$i(c, n, F) \
+#define CMOCK_REDIRECT_TO_MOCK$i(c, n, F) \
 static GMOCK_RESULT_(, F) (*__cmock_real_##c##_##n)($declare_args) = \
 	(GMOCK_RESULT_(, F) (*)($declare_args))cmock_lookup(#n, (const void *)&::n); \
 \
