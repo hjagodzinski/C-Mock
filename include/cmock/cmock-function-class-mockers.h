@@ -44,7 +44,7 @@
 #include <stdexcept>
 
 // Allows finding an instance of a class:
-//   class Foo : CMockMocker<Foo> { ... }
+//   class Foo : public CMockMocker<Foo> { ... }
 //   Foo *p = CMockMocker<Foo>::cmock_get_instance();
 template<typename T>
 class CMockMocker
