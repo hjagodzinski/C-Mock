@@ -24,7 +24,7 @@ elif [ "$1" == --cflags -a $# -eq 1 ] ; then
 	DIR=`dirname $DIR`
 	DIR=`dirname $DIR`
 
-		echo "-I$DIR/include"
+	echo "-I$DIR/include"
 elif [ "$1" == --libs -a $# -le 3 ] ; then
 	if [ $# -eq 1 ] ; then
 		echo "-rdynamic -Wl,--no-as-needed -ldl"
