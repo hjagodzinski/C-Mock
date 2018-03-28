@@ -5,14 +5,14 @@
 
 #include "foo.h"
 
-class FooMocker : public FunctionMocker<FooMocker> 
+class FooMocker : public CMockMocker<FooMocker> 
 {
 public:
     MOCK_METHOD2(add, int(int, int));
     MOCK_METHOD2(sub, int(int, int));
 };
 
-class CountMocker : public FunctionMocker<CountMocker> 
+class CountMocker : public CMockMocker<CountMocker> 
 {
 public:
     MOCK_METHOD2(count, int(const char *, char));

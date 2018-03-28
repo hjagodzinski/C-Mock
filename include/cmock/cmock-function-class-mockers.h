@@ -44,18 +44,18 @@
 #include <stdexcept>
 
 // Allows finding an instance of a class:
-//   class Foo : CmockFuncMocker<Foo> { ... }
-//   Foo *p = CmockFuncMocker<Foo>::cmock_get_instance();
+//   class Foo : CMockMocker<Foo> { ... }
+//   Foo *p = CMockMocker<Foo>::cmock_get_instance();
 template<typename T>
-class CmockFuncMocker
+class CMockMocker
 {
 public:
-	CmockFuncMocker()
+	CMockMocker()
 	{
 		instance = (T *)this;
 	}
 
-	~CmockFuncMocker()
+	~CMockMocker()
 	{
 		instance = (T *)NULL;
 	}
@@ -67,7 +67,7 @@ private:
 };
 
 template<typename T>
-T *CmockFuncMocker<T>::instance = NULL;
+T *CMockMocker<T>::instance = NULL;
 
 // Find the real implementation of a mocked function
 static inline void *
