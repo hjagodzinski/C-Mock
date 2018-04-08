@@ -104,7 +104,7 @@ and
 
 to get the compilations and linker options, respectively.
 
-Note: Since it is [not recommended to install a pre-compiled version of Google Test][4] many distributions don't provide such libs anymore. You need to download and compile those libs as described in [Google Test][1].
+Note: Since it is [not recommended to install a pre-compiled version of [Google Test][1] many distributions don't provide such libs anymore. You need to download and compile those libs as described in [Google Test][1].
 For the linker to find libgmock and libgtest you can pass the paths to those libs to the cmock-config script.
 If you omit the path to libgtest it defaults to "pathToLibgmock/libgtest".
 
@@ -149,5 +149,5 @@ References
 
 [1]: https://github.com/google/googletest "Google Test"
 [2]: https://github.com/google/googlemock/blob/master/googlemock/docs/FrequentlyAskedQuestions.md#my-code-calls-a-staticglobal-function--can-i-mock-it "My code calls a static/global function. Can I mock it?"
-[3]: https://googletesting.blogspot.com/2008/06/defeat-static-cling.html "Defeat "Static Cling"
+[3]: https://googletesting.blogspot.com/2008/06/defeat-static-cling.html "Defeat \"Static Cling\""
 [4]: https://github.com/google/googletest/blob/master/googletest/docs/FAQ.md#why-is-it-not-recommended-to-install-a-pre-compiled-copy-of-google-test-for-example-into-usrlocal "Why is it not recommended to install a pre-compiled copy of Google Test (for example, into /usr/local)"
