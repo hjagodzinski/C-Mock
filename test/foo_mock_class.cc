@@ -2,5 +2,3 @@
 
 CMOCK_MOCK_FUNCTION2(FooMocker, add, int(int, int));
 CMOCK_MOCK_FUNCTION2(FooMocker, sub, int(int, int));
-
-CMOCK_MOCK_FUNCTION2(CountMocker, count, int(const char *, char));

@@ -12,10 +12,4 @@ public:
     MOCK_METHOD2(sub, int(int, int));
 };
 
-class CountMocker : public CMockMocker<CountMocker> 
-{
-public:
-    MOCK_METHOD2(count, int(const char *, char));
-};
-
 #endif /* CMOCK_TEST_FOO_MOCK_CLASS_H_ */
