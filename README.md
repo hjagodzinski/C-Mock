@@ -1,6 +1,8 @@
 C Mock - Google Mock Extension
 ==============================
 
+[![Build Status](https://travis-ci.org/hjagodzinski/C-Mock.svg?branch=master)](https://travis-ci.org/hjagodzinski/C-Mock)
+
 Overview
 --------
 
