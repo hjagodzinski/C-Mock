@@ -1,26 +1,26 @@
 #include <cmock/cmock.h>
 
-#include "foo_mock_class.h"
+#include "math_mocker.h"
 
 using namespace ::testing;
 
 /**
- * Function foo is mocked as long as FooFunctionMock instance exists.
+ * Functions add and substract are mocked as long as MathMocker instance exists.
  * Once mock function is destroyed, call directs to real function.
  */
-TEST(FunctionClassMockersTest, FunctionIsMockedAsLongAsMockInstanceExists) {
+TEST(FunctionClassMockersTest, FunctionsAreMockedAsLongAsMockerInstanceExists) {
 
 	{
-		FooMocker mock;
+		MathMocker mock;
 
-		EXPECT_CALL(mock, add(1, 1)).WillOnce(Return(11));
-		ASSERT_EQ(11, add(1, 1));
+		EXPECT_CALL(mock, divide(1, 1)).WillOnce(Return(11));
+		ASSERT_EQ(11, divide(1, 1));
 
-		EXPECT_CALL(mock, sub(1, 1)).WillOnce(Return(7));
-		ASSERT_EQ(7, sub(1, 1));
+		EXPECT_CALL(mock, substract(1, 2)).WillOnce(Return(12));
+		ASSERT_EQ(12, substract(1, 2));
 	}
 
-	ASSERT_EQ(2, add(1, 1));
-	ASSERT_EQ(0, sub(1, 1));
+	ASSERT_EQ(1, divide(1, 1));
+	ASSERT_EQ(-1, substract(1, 2));
 }
 

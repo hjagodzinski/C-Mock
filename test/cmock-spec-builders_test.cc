@@ -1,13 +1,13 @@
 #include <cmock/cmock.h>
 
-#include "foo_mock.h"
+#include "add_function_mock.h"
 
 TEST(SpecBuildersTest, ExpectFunctionCallCompiles) {
-  FooFunctionMock mock;
+  AddFunctionMock mock;
   EXPECT_FUNCTION_CALL(mock, (1, 2)).Times(0);
 }
 
 TEST(SpecBuildersTest, OnFunctionCallCompiles) {
-  FooFunctionMock mock;
+  AddFunctionMock mock;
   ON_FUNCTION_CALL(mock, (1, 2));
 }

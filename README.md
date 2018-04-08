@@ -26,61 +26,122 @@ Requirements
 Guide
 -----
 
-C Mock requires no prior build, it is just a set of header files. What it really gives you is four macros:
+C Mock requires no prior build, it is just a set of header files you include in your code.
 
-* DECLARE\_FUNCTION\_MOCK\*
-* IMPLEMENT\_FUNCTION\_MOCK\*
+### Using CMockMocker class ###
+
+C Mock comes with *CMockMocker* class and CMOCK\_MOCK\_FUNCTION* set of macros.
+
+#### Creating mock ####
+
+Suppose you want to mock *int divide(int, int)* and *int substract(int, int)* functions declared in *math.h* header file. To do that you can create a single mock class for both of them called *MathMocker*:
+
+* *math_mocker.h*:
+
+```cpp
+#include <cmock/cmock.h>
+
+#include "math.h"
+
+class MathMocker : public CMockMocker<MathMocker>
+{
+public:
+    MOCK_METHOD2(divide, int(int, int));
+    MOCK_METHOD2(substract, int(int, int));
+};
+```
+
+* *math_mocker.cc*:
+
+```cpp
+#include "math_mocker.h"
+
+CMOCK_MOCK_FUNCTION2(MathMocker, divide, int(int, int));
+CMOCK_MOCK_FUNCTION2(MathMocker, substract, int(int, int));
+```
+
+#### Specifying expectations ####
+
+To specify the expectations you use Google Mock's macros as you would normally do. The functions are mocked as long as its corresponding mocker class instance exists. This allows to easily control when the functions are mocked.
+
+```cpp
+{
+    MathMocker mock;
+
+    EXPECT_CALL(mock, divide(1, 1)).WillOnce(Return(11));
+    ASSERT_EQ(11, divide(1, 1)); // calling the mock
+
+    EXPECT_CALL(mock, substract(1, 2)).WillOnce(Return(12));
+    ASSERT_EQ(12, substract(1, 2)); // calling the mock
+}
+
+ASSERT_EQ(1, divide(1, 1)); // calling the real function
+ASSERT_EQ(-1, substract(1, 2)); // calling the real function
+```
+
+### Using macros (deprecated) ###
+
+C Mock comes with four macros:
+
+* DECLARE\_FUNCTION\_MOCK\* and IMPLEMENT\_FUNCTION\_MOCK\*
 * EXPECT\_FUNCTION\_CALL
 * ON\_FUNCTION\_CALL
 
 These macros do what theirs' method counterparts do MOCK\_METHOD\_\*, EXPECT\_CALL and ON\_CALL, respectively. There are small differences though.
 
-### Creating mock ###
+#### Creating mock ####
 
-Both DECLARE\_FUNCTION\_MOCK\* and IMPLEMENT\_FUNCTION\_MOCK\* in fact stand for a series of macros for defining and implementing C function mocks, respectively. These macros take three arguments: a mock class name, a function name and a function prototype.
+In fact both DECLARE\_FUNCTION\_MOCK\* and IMPLEMENT\_FUNCTION\_MOCK\* stand for a series of macros for defining and implementing a function mock, respectively. These macros take three arguments: a mock class name, a function name and a function prototype.
 
-C Mock internally redefines a function being mocked. Because only one implementation of a function might exist in executable, splitting of declaration and implementation is necessary. Especially, if mocking a certain function takes place in a more than one compilation unit. Therefore declaration should be put in a header file whereas implementation in a source file.
+C Mock internally redefines a function being mocked. Because only one implementation of a function might exist in an executable, a splitting of a declaration and implementation is necessary. Especially, if mocking a certain function takes place in a more than one compilation unit. Therefore declaration should be put in a header file whereas implementation in a source file.
 
-C Mock does has no knowledge whether a mocked function is declared with name mangling - whether this is a pure C function or a C++ function. Therefore C Mock does not redeclare mocked function. Original function prototype declaration should be used (i.e. use of original function header file).
+C Mock has no knowledge whether a mocked function is declared with a name mangling - whether this is a pure C function or a C++ function. Therefore C Mock does not redeclare mocked function. Original function prototype declaration should be used (i.e. use of original function header file).
 
-Suppose you want to mock *int foo(int, int)* function declared in *foo.h* header file and name mock class *FooFunctionMock*. You could create two files, one header with declaration and one source file with implementation:
+Suppose you want to mock *int add(int, int)* function declared in *math.h* header file. To do that you can create *AddFunctionMock* mock class:
 
-* *foo_mock.h*
+* *add_function_mock.h*
 
-            #include <cmock/cmock.h>
+    ```cpp
+    #include <cmock/cmock.h>
 
-            #include "foo.h" // use original function declaration
+    #include "math.h" // use original function declaration
 
-            DECLARE_FUNCTION_MOCK2(FooFunctionMock, foo, int(int, int));
+    DECLARE_FUNCTION_MOCK2(AddFunctionMock, add, int(int, int));
+    ```
 
-* *foo_mock.cc*
+* *add_function_mock.cc*
 
-            IMPLEMENT_FUNCTION_MOCK2(FooFunctionMock, foo, int(int, int));
+    ```cpp
+    IMPLEMENT_FUNCTION_MOCK2(AddFunctionMock, add, int(int, int));
+    ```
 
-### Specifying expectations ###
+#### Specifying expectations ####
 
-EXPECT\_FUNCTION\_CALL and ON\_FUNCTION\_CALL do exactly what theirs' method equivalents. Both take two arguments: a mock class instance and the arguments you expect - there is no need to repeat function name since it is already known at this point. Suppose we expect *foo* function to be called once with arguments *1* and *2*, and want it to return *3*:
+EXPECT\_FUNCTION\_CALL and ON\_FUNCTION\_CALL do exactly what theirs' method equivalents. Both take two arguments: a mock class instance and the arguments you expect - there is no need to repeat function name since it is already known at this point. Suppose we expect *add* function to be called once with arguments *1* and *2*, and want it to return *12*:
 
-        FooFunctionMock mock;
-        EXPECT_FUNCTION_CALL(mock, (1, 2)).WillOnce(::testing::Return(3));
+```cpp
+AddFunctionMock mock;
+EXPECT_FUNCTION_CALL(mock, (1, 2)).WillOnce(::testing::Return(12));
+```
 
-Function is mocked as long as its corresponding mock class instance exists. This allows to control when a function is mocked.
+A function is mocked as long as its corresponding mock class instance exists. This allows to control when a function is mocked.
 
-        {
-            {
-                FooFunctionMock mock;
-                /* ... */
-                foo(1, 2); // call mock
-            }
+```cpp
+{
+    AddFunctionMock mock;
+    add(1, 2); // calling the mock
+}
 
-            foo(1, 2); // call real function
-        }
+add(1, 2); // calling the real function
+```
 
-Still you might want to use a mocked function real implementation. Each mock class exports static *real* class field which holds pointer to a real function.
+Still you might want to use a mocked function's real implementation. Each mock class exports static *real* class field which holds pointer to a real function.
 
-        FooFunctionMock mock;
-        EXPECT_FUNCTION_CALL(mock, (1, 2)).WillOnce(::testing::Invoke(FooFunctionMock::real));
-        foo(1, 2); // call real function
+```cpp
+AddFunctionMock mock;
+EXPECT_FUNCTION_CALL(mock, (1, 2)).WillOnce(::testing::Invoke(AddFunctionMock::real));
+foo(1, 2); // calling the real function
+```
 
 ### Building ###
 
@@ -96,22 +157,28 @@ Secondly, you must pass the following options to a linker when building a test e
 
 C Mock comes with *cmock-config* tool to hide all these details away from you. Run
 
-        cmock-config --cflags
+```
+cmock-config --cflags
+```
 
 and
 
-        cmock-config --libs [path to libgmock [path to libgtest]]
+```
+cmock-config --libs [path to libgmock [path to libgtest]]
+```
 
 to get the compilations and linker options, respectively.
 
-Note: Since it is [not recommended to install a pre-compiled version of [Google Test][1] many distributions don't provide such libs anymore. You need to download and compile those libs as described in [Google Test][1].
+Note: Since [it is not recommended to install a pre-compiled version of Google Test][4] many distributions don't provide such libs anymore. You need to download and compile those libs as described in [Google Test][1].
 For the linker to find libgmock and libgtest you can pass the paths to those libs to the cmock-config script.
 If you omit the path to libgtest it defaults to "pathToLibgmock/libgtest".
 
 Let's say you built a code under test into *libfoo.so* and put a test code in *bar.cc*. To build your test executable you would run:
 
-        g++ `cmock-config --cflags` -c bar.cc -o bar.o
-        g++ `cmock-config --libs` -pthread -lfoo bar.o -o bar # Google Test requires -pthread
+```
+g++ `cmock-config --cflags` -c bar.cc -o bar.o
+g++ `cmock-config --libs` -pthread -lfoo bar.o -o bar # Google Test requires -pthread
+```
 
 When building code under test as a dynamic library it is handy to specify *soname* as an absolute path name. Then when test executable is run no additional environment setup is required for the dynamic linking loader to locate your library (i.e. setting LD\_LIBRARY\_PATH).
 
@@ -120,23 +187,31 @@ Installation
 
 To install run:
 
-        make install
+```
+make install
+```
 
 To uninstall run:
 
-        make uninstall
+```
+make uninstall
+```
 
 By default installation *PREFIX* is */usr/local*. You can change it as follows:
 
-        make install PREFIX=/usr
+```
+make install PREFIX=/usr
+```
 
 Test
 ----
 
 If your platform is supported and Google Test is installed, the following commands should succeed:
 
-        make
-        make test
+```
+make
+make test
+```
 
 Tests are quite simple and are a good source of usage examples.
 
