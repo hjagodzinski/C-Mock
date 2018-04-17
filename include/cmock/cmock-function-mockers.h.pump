@@ -101,14 +101,6 @@ GMOCK_RESULT_(, F) c::operator()($declare_args) { \
 \
 c::func_type c::lookup() { \
     c::func_type real = (c::func_type)dlsym(RTLD_NEXT, #n); \
-    if (real == NULL) { \
-        std::ostringstream msg; \
-        msg << "unable to load "; \
-        msg << #n; \
-        msg << " function symbol"; \
-\
-        throw std::logic_error(msg.str()); \
-    } \
     return real; \
 } \
 \
@@ -117,6 +109,14 @@ GMOCK_RESULT_(, F) c::call($declare_args) { \
         return (*instance)($call_args); \
     } \
 \
+    if (real == NULL) { \
+        std::ostringstream msg; \
+        msg << "Error: No mock was defined in the test body for "; \
+        msg << #n; \
+        msg << " function symbol"; \
+\
+        throw std::logic_error(msg.str()); \
+    } \
     return real($call_args); \
 } \
 \

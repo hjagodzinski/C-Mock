@@ -72,17 +72,9 @@ T *CMockMocker<T>::instance = NULL;
 
 // Find the real implementation of a mocked function
 static inline void *
-cmock_lookup(const char *fname, const void *mock_addr)
+cmock_lookup(const char *fname, const void *)
 {
     void *real = dlsym(RTLD_NEXT, fname);
-    if (real == NULL || real == mock_addr) {
-        std::ostringstream msg;
-        msg << "unable to load " << fname << " function symbol, got " << real;
-        if (real == mock_addr) {
-        	msg << " (same as mock)";
-        }
-        throw std::logic_error(msg.str());
-    }
     return real;
 }
 
@@ -104,6 +96,14 @@ GMOCK_RESULT_(, F) n($declare_args) { \
         return mock->n($call_args); \
     } \
 	\
+    if (__cmock_real_##c##_##n == NULL) { \
+        std::ostringstream msg; \
+        msg << "Error: No mock was defined in the test body for "; \
+        msg << #n; \
+        msg << " function symbol"; \
+\
+        throw std::logic_error(msg.str()); \
+    } \
     return __cmock_real_##c##_##n($call_args); \
 } \
 

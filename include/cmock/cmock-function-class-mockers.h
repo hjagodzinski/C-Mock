@@ -71,17 +71,9 @@ T *CMockMocker<T>::instance = NULL;
 
 // Find the real implementation of a mocked function
 static inline void *
-cmock_lookup(const char *fname, const void *mock_addr)
+cmock_lookup(const char *fname, const void *)
 {
     void *real = dlsym(RTLD_NEXT, fname);
-    if (real == NULL || real == mock_addr) {
-        std::ostringstream msg;
-        msg << "unable to load " << fname << " function symbol, got " << real;
-        if (real == mock_addr) {
-        	msg << " (same as mock)";
-        }
-        throw std::logic_error(msg.str());
-    }
     return real;
 }
 
@@ -95,6 +87,14 @@ GMOCK_RESULT_(, F) n() { \
         return mock->n(); \
     } \
 	\
+    if (__cmock_real_##c##_##n == NULL) { \
+        std::ostringstream msg; \
+        msg << "Error: No mock was defined in the test body for "; \
+        msg << #n; \
+        msg << " function symbol"; \
+\
+        throw std::logic_error(msg.str()); \
+    } \
     return __cmock_real_##c##_##n(); \
 } \
 
@@ -110,6 +110,14 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1) { \
         return mock->n(cmock_a1); \
     } \
 	\
+    if (__cmock_real_##c##_##n == NULL) { \
+        std::ostringstream msg; \
+        msg << "Error: No mock was defined in the test body for "; \
+        msg << #n; \
+        msg << " function symbol"; \
+\
+        throw std::logic_error(msg.str()); \
+    } \
     return __cmock_real_##c##_##n(cmock_a1); \
 } \
 
@@ -126,6 +134,14 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
         return mock->n(cmock_a1, cmock_a2); \
     } \
 	\
+    if (__cmock_real_##c##_##n == NULL) { \
+        std::ostringstream msg; \
+        msg << "Error: No mock was defined in the test body for "; \
+        msg << #n; \
+        msg << " function symbol"; \
+\
+        throw std::logic_error(msg.str()); \
+    } \
     return __cmock_real_##c##_##n(cmock_a1, cmock_a2); \
 } \
 
@@ -144,6 +160,14 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
         return mock->n(cmock_a1, cmock_a2, cmock_a3); \
     } \
 	\
+    if (__cmock_real_##c##_##n == NULL) { \
+        std::ostringstream msg; \
+        msg << "Error: No mock was defined in the test body for "; \
+        msg << #n; \
+        msg << " function symbol"; \
+\
+        throw std::logic_error(msg.str()); \
+    } \
     return __cmock_real_##c##_##n(cmock_a1, cmock_a2, cmock_a3); \
 } \
 
@@ -163,6 +187,14 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
         return mock->n(cmock_a1, cmock_a2, cmock_a3, cmock_a4); \
     } \
 	\
+    if (__cmock_real_##c##_##n == NULL) { \
+        std::ostringstream msg; \
+        msg << "Error: No mock was defined in the test body for "; \
+        msg << #n; \
+        msg << " function symbol"; \
+\
+        throw std::logic_error(msg.str()); \
+    } \
     return __cmock_real_##c##_##n(cmock_a1, cmock_a2, cmock_a3, cmock_a4); \
 } \
 
@@ -182,6 +214,14 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
         return mock->n(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5); \
     } \
 	\
+    if (__cmock_real_##c##_##n == NULL) { \
+        std::ostringstream msg; \
+        msg << "Error: No mock was defined in the test body for "; \
+        msg << #n; \
+        msg << " function symbol"; \
+\
+        throw std::logic_error(msg.str()); \
+    } \
     return __cmock_real_##c##_##n(cmock_a1, cmock_a2, cmock_a3, cmock_a4, \
         cmock_a5); \
 } \
@@ -205,6 +245,14 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
             cmock_a6); \
     } \
 	\
+    if (__cmock_real_##c##_##n == NULL) { \
+        std::ostringstream msg; \
+        msg << "Error: No mock was defined in the test body for "; \
+        msg << #n; \
+        msg << " function symbol"; \
+\
+        throw std::logic_error(msg.str()); \
+    } \
     return __cmock_real_##c##_##n(cmock_a1, cmock_a2, cmock_a3, cmock_a4, \
         cmock_a5, cmock_a6); \
 } \
@@ -229,6 +277,14 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
             cmock_a6, cmock_a7); \
     } \
 	\
+    if (__cmock_real_##c##_##n == NULL) { \
+        std::ostringstream msg; \
+        msg << "Error: No mock was defined in the test body for "; \
+        msg << #n; \
+        msg << " function symbol"; \
+\
+        throw std::logic_error(msg.str()); \
+    } \
     return __cmock_real_##c##_##n(cmock_a1, cmock_a2, cmock_a3, cmock_a4, \
         cmock_a5, cmock_a6, cmock_a7); \
 } \
@@ -255,6 +311,14 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
             cmock_a6, cmock_a7, cmock_a8); \
     } \
 	\
+    if (__cmock_real_##c##_##n == NULL) { \
+        std::ostringstream msg; \
+        msg << "Error: No mock was defined in the test body for "; \
+        msg << #n; \
+        msg << " function symbol"; \
+\
+        throw std::logic_error(msg.str()); \
+    } \
     return __cmock_real_##c##_##n(cmock_a1, cmock_a2, cmock_a3, cmock_a4, \
         cmock_a5, cmock_a6, cmock_a7, cmock_a8); \
 } \
@@ -282,6 +346,14 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
             cmock_a6, cmock_a7, cmock_a8, cmock_a9); \
     } \
 	\
+    if (__cmock_real_##c##_##n == NULL) { \
+        std::ostringstream msg; \
+        msg << "Error: No mock was defined in the test body for "; \
+        msg << #n; \
+        msg << " function symbol"; \
+\
+        throw std::logic_error(msg.str()); \
+    } \
     return __cmock_real_##c##_##n(cmock_a1, cmock_a2, cmock_a3, cmock_a4, \
         cmock_a5, cmock_a6, cmock_a7, cmock_a8, cmock_a9); \
 } \
@@ -310,6 +382,14 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
             cmock_a6, cmock_a7, cmock_a8, cmock_a9, cmock_a10); \
     } \
 	\
+    if (__cmock_real_##c##_##n == NULL) { \
+        std::ostringstream msg; \
+        msg << "Error: No mock was defined in the test body for "; \
+        msg << #n; \
+        msg << " function symbol"; \
+\
+        throw std::logic_error(msg.str()); \
+    } \
     return __cmock_real_##c##_##n(cmock_a1, cmock_a2, cmock_a3, cmock_a4, \
         cmock_a5, cmock_a6, cmock_a7, cmock_a8, cmock_a9, cmock_a10); \
 } \
