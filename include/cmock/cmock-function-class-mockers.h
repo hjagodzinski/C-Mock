@@ -73,8 +73,7 @@ T *CMockMocker<T>::instance = NULL;
 static inline void *
 cmock_lookup(const char *fname, const void *)
 {
-    void *real = dlsym(RTLD_NEXT, fname);
-    return real;
+    return dlsym(RTLD_NEXT, fname);
 }
 
 #define CMOCK_MOCK_FUNCTION0(c, n, F) \
@@ -89,10 +88,8 @@ GMOCK_RESULT_(, F) n() { \
 	\
     if (__cmock_real_##c##_##n == NULL) { \
         std::ostringstream msg; \
-        msg << "Error: No mock was defined in the test body for "; \
-        msg << #n; \
-        msg << " function symbol"; \
-\
+        msg << "Error: Function " << #n; \
+        msg << " not found - both mock and real function are missing"; \
         throw std::logic_error(msg.str()); \
     } \
     return __cmock_real_##c##_##n(); \
@@ -112,10 +109,8 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1) { \
 	\
     if (__cmock_real_##c##_##n == NULL) { \
         std::ostringstream msg; \
-        msg << "Error: No mock was defined in the test body for "; \
-        msg << #n; \
-        msg << " function symbol"; \
-\
+        msg << "Error: Function " << #n; \
+        msg << " not found - both mock and real function are missing"; \
         throw std::logic_error(msg.str()); \
     } \
     return __cmock_real_##c##_##n(cmock_a1); \
@@ -136,10 +131,8 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
 	\
     if (__cmock_real_##c##_##n == NULL) { \
         std::ostringstream msg; \
-        msg << "Error: No mock was defined in the test body for "; \
-        msg << #n; \
-        msg << " function symbol"; \
-\
+        msg << "Error: Function " << #n; \
+        msg << " not found - both mock and real function are missing"; \
         throw std::logic_error(msg.str()); \
     } \
     return __cmock_real_##c##_##n(cmock_a1, cmock_a2); \
@@ -162,10 +155,8 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
 	\
     if (__cmock_real_##c##_##n == NULL) { \
         std::ostringstream msg; \
-        msg << "Error: No mock was defined in the test body for "; \
-        msg << #n; \
-        msg << " function symbol"; \
-\
+        msg << "Error: Function " << #n; \
+        msg << " not found - both mock and real function are missing"; \
         throw std::logic_error(msg.str()); \
     } \
     return __cmock_real_##c##_##n(cmock_a1, cmock_a2, cmock_a3); \
@@ -189,10 +180,8 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
 	\
     if (__cmock_real_##c##_##n == NULL) { \
         std::ostringstream msg; \
-        msg << "Error: No mock was defined in the test body for "; \
-        msg << #n; \
-        msg << " function symbol"; \
-\
+        msg << "Error: Function " << #n; \
+        msg << " not found - both mock and real function are missing"; \
         throw std::logic_error(msg.str()); \
     } \
     return __cmock_real_##c##_##n(cmock_a1, cmock_a2, cmock_a3, cmock_a4); \
@@ -216,10 +205,8 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
 	\
     if (__cmock_real_##c##_##n == NULL) { \
         std::ostringstream msg; \
-        msg << "Error: No mock was defined in the test body for "; \
-        msg << #n; \
-        msg << " function symbol"; \
-\
+        msg << "Error: Function " << #n; \
+        msg << " not found - both mock and real function are missing"; \
         throw std::logic_error(msg.str()); \
     } \
     return __cmock_real_##c##_##n(cmock_a1, cmock_a2, cmock_a3, cmock_a4, \
@@ -247,10 +234,8 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
 	\
     if (__cmock_real_##c##_##n == NULL) { \
         std::ostringstream msg; \
-        msg << "Error: No mock was defined in the test body for "; \
-        msg << #n; \
-        msg << " function symbol"; \
-\
+        msg << "Error: Function " << #n; \
+        msg << " not found - both mock and real function are missing"; \
         throw std::logic_error(msg.str()); \
     } \
     return __cmock_real_##c##_##n(cmock_a1, cmock_a2, cmock_a3, cmock_a4, \
@@ -279,10 +264,8 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
 	\
     if (__cmock_real_##c##_##n == NULL) { \
         std::ostringstream msg; \
-        msg << "Error: No mock was defined in the test body for "; \
-        msg << #n; \
-        msg << " function symbol"; \
-\
+        msg << "Error: Function " << #n; \
+        msg << " not found - both mock and real function are missing"; \
         throw std::logic_error(msg.str()); \
     } \
     return __cmock_real_##c##_##n(cmock_a1, cmock_a2, cmock_a3, cmock_a4, \
@@ -313,10 +296,8 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
 	\
     if (__cmock_real_##c##_##n == NULL) { \
         std::ostringstream msg; \
-        msg << "Error: No mock was defined in the test body for "; \
-        msg << #n; \
-        msg << " function symbol"; \
-\
+        msg << "Error: Function " << #n; \
+        msg << " not found - both mock and real function are missing"; \
         throw std::logic_error(msg.str()); \
     } \
     return __cmock_real_##c##_##n(cmock_a1, cmock_a2, cmock_a3, cmock_a4, \
@@ -348,10 +329,8 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
 	\
     if (__cmock_real_##c##_##n == NULL) { \
         std::ostringstream msg; \
-        msg << "Error: No mock was defined in the test body for "; \
-        msg << #n; \
-        msg << " function symbol"; \
-\
+        msg << "Error: Function " << #n; \
+        msg << " not found - both mock and real function are missing"; \
         throw std::logic_error(msg.str()); \
     } \
     return __cmock_real_##c##_##n(cmock_a1, cmock_a2, cmock_a3, cmock_a4, \
@@ -384,10 +363,8 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
 	\
     if (__cmock_real_##c##_##n == NULL) { \
         std::ostringstream msg; \
-        msg << "Error: No mock was defined in the test body for "; \
-        msg << #n; \
-        msg << " function symbol"; \
-\
+        msg << "Error: Function " << #n; \
+        msg << " not found - both mock and real function are missing"; \
         throw std::logic_error(msg.str()); \
     } \
     return __cmock_real_##c##_##n(cmock_a1, cmock_a2, cmock_a3, cmock_a4, \
