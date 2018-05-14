@@ -100,16 +100,7 @@ GMOCK_RESULT_(, F) c::operator()($declare_args) { \
 } \
 \
 c::func_type c::lookup() { \
-    c::func_type real = (c::func_type)dlsym(RTLD_NEXT, #n); \
-    if (real == NULL) { \
-        std::ostringstream msg; \
-        msg << "unable to load "; \
-        msg << #n; \
-        msg << " function symbol"; \
-\
-        throw std::logic_error(msg.str()); \
-    } \
-    return real; \
+    return (c::func_type)dlsym(RTLD_NEXT, #n); \
 } \
 \
 GMOCK_RESULT_(, F) c::call($declare_args) { \
@@ -117,6 +108,12 @@ GMOCK_RESULT_(, F) c::call($declare_args) { \
         return (*instance)($call_args); \
     } \
 \
+    if (real == NULL) { \
+        std::ostringstream msg; \
+        msg << "Error: Function " << #n; \
+        msg << " not found. Neither mock nor real function is present."; \
+        throw std::logic_error(msg.str()); \
+    } \
     return real($call_args); \
 } \
 \

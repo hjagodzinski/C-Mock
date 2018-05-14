@@ -24,3 +24,15 @@ TEST(FunctionClassMockersTest, FunctionsAreMockedAsLongAsMockerInstanceExists) {
 	ASSERT_EQ(-1, substract(1, 2));
 }
 
+TEST(FunctionClassMockersTest, ExceptionIfNotFound) {
+
+	{
+		MathMocker mock;
+
+		EXPECT_CALL(mock, negate(3)).WillOnce(Return(-3));
+		ASSERT_EQ(-3, negate(3));
+	}
+
+	EXPECT_THROW(negate(3), std::logic_error);
+}
+
