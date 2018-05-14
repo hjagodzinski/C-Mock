@@ -111,7 +111,7 @@ GMOCK_RESULT_(, F) c::call($declare_args) { \
     if (real == NULL) { \
         std::ostringstream msg; \
         msg << "Error: Function " << #n; \
-        msg << " not found - both mock and real function are missing"; \
+        msg << " not found. Neither mock nor real function is present."; \
         throw std::logic_error(msg.str()); \
     } \
     return real($call_args); \

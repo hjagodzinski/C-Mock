@@ -71,14 +71,14 @@ T *CMockMocker<T>::instance = NULL;
 
 // Find the real implementation of a mocked function
 static inline void *
-cmock_lookup(const char *fname, const void *)
+cmock_lookup(const char *fname)
 {
     return dlsym(RTLD_NEXT, fname);
 }
 
 #define CMOCK_MOCK_FUNCTION0(c, n, F) \
 static GMOCK_RESULT_(, F) (*__cmock_real_##c##_##n)() = \
-	(GMOCK_RESULT_(, F) (*)())cmock_lookup(#n, (const void *)&::n); \
+	(GMOCK_RESULT_(, F) (*)())cmock_lookup(#n); \
 \
 GMOCK_RESULT_(, F) n() { \
     c *mock = c::cmock_get_instance(); \
@@ -89,7 +89,7 @@ GMOCK_RESULT_(, F) n() { \
     if (__cmock_real_##c##_##n == NULL) { \
         std::ostringstream msg; \
         msg << "Error: Function " << #n; \
-        msg << " not found - both mock and real function are missing"; \
+        msg << " not found. Neither mock nor real function is present."; \
         throw std::logic_error(msg.str()); \
     } \
     return __cmock_real_##c##_##n(); \
@@ -98,8 +98,7 @@ GMOCK_RESULT_(, F) n() { \
 #define CMOCK_MOCK_FUNCTION1(c, n, F) \
 static GMOCK_RESULT_(, F) (*__cmock_real_##c##_##n)(GMOCK_ARG_(, 1, \
     F) cmock_a1) = \
- (GMOCK_RESULT_(, F) (*)(GMOCK_ARG_(, 1, F) cmock_a1))cmock_lookup(#n, \
-     (const void *)&::n); \
+	(GMOCK_RESULT_(, F) (*)(GMOCK_ARG_(, 1, F) cmock_a1))cmock_lookup(#n); \
 \
 GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1) { \
     c *mock = c::cmock_get_instance(); \
@@ -110,7 +109,7 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1) { \
     if (__cmock_real_##c##_##n == NULL) { \
         std::ostringstream msg; \
         msg << "Error: Function " << #n; \
-        msg << " not found - both mock and real function are missing"; \
+        msg << " not found. Neither mock nor real function is present."; \
         throw std::logic_error(msg.str()); \
     } \
     return __cmock_real_##c##_##n(cmock_a1); \
@@ -120,7 +119,7 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1) { \
 static GMOCK_RESULT_(, F) (*__cmock_real_##c##_##n)(GMOCK_ARG_(, 1, \
     F) cmock_a1, GMOCK_ARG_(, 2, F) cmock_a2) = \
  (GMOCK_RESULT_(, F) (*)(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
-     F) cmock_a2))cmock_lookup(#n, (const void *)&::n); \
+     F) cmock_a2))cmock_lookup(#n); \
 \
 GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
     F) cmock_a2) { \
@@ -132,7 +131,7 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
     if (__cmock_real_##c##_##n == NULL) { \
         std::ostringstream msg; \
         msg << "Error: Function " << #n; \
-        msg << " not found - both mock and real function are missing"; \
+        msg << " not found. Neither mock nor real function is present."; \
         throw std::logic_error(msg.str()); \
     } \
     return __cmock_real_##c##_##n(cmock_a1, cmock_a2); \
@@ -143,8 +142,7 @@ static GMOCK_RESULT_(, F) (*__cmock_real_##c##_##n)(GMOCK_ARG_(, 1, \
     F) cmock_a1, GMOCK_ARG_(, 2, F) cmock_a2, GMOCK_ARG_(, 3, \
     F) cmock_a3) = \
  (GMOCK_RESULT_(, F) (*)(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
-     F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3))cmock_lookup(#n, \
-     (const void *)&::n); \
+     F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3))cmock_lookup(#n); \
 \
 GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
     F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3) { \
@@ -156,7 +154,7 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
     if (__cmock_real_##c##_##n == NULL) { \
         std::ostringstream msg; \
         msg << "Error: Function " << #n; \
-        msg << " not found - both mock and real function are missing"; \
+        msg << " not found. Neither mock nor real function is present."; \
         throw std::logic_error(msg.str()); \
     } \
     return __cmock_real_##c##_##n(cmock_a1, cmock_a2, cmock_a3); \
@@ -168,7 +166,7 @@ static GMOCK_RESULT_(, F) (*__cmock_real_##c##_##n)(GMOCK_ARG_(, 1, \
     GMOCK_ARG_(, 4, F) cmock_a4) = \
  (GMOCK_RESULT_(, F) (*)(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
      F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, \
-     F) cmock_a4))cmock_lookup(#n, (const void *)&::n); \
+     F) cmock_a4))cmock_lookup(#n); \
 \
 GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
     F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, \
@@ -181,7 +179,7 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
     if (__cmock_real_##c##_##n == NULL) { \
         std::ostringstream msg; \
         msg << "Error: Function " << #n; \
-        msg << " not found - both mock and real function are missing"; \
+        msg << " not found. Neither mock nor real function is present."; \
         throw std::logic_error(msg.str()); \
     } \
     return __cmock_real_##c##_##n(cmock_a1, cmock_a2, cmock_a3, cmock_a4); \
@@ -193,7 +191,7 @@ static GMOCK_RESULT_(, F) (*__cmock_real_##c##_##n)(GMOCK_ARG_(, 1, \
     GMOCK_ARG_(, 4, F) cmock_a4, GMOCK_ARG_(, 5, F) cmock_a5) = \
  (GMOCK_RESULT_(, F) (*)(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
      F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
-     GMOCK_ARG_(, 5, F) cmock_a5))cmock_lookup(#n, (const void *)&::n); \
+     GMOCK_ARG_(, 5, F) cmock_a5))cmock_lookup(#n); \
 \
 GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
     F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
@@ -206,7 +204,7 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
     if (__cmock_real_##c##_##n == NULL) { \
         std::ostringstream msg; \
         msg << "Error: Function " << #n; \
-        msg << " not found - both mock and real function are missing"; \
+        msg << " not found. Neither mock nor real function is present."; \
         throw std::logic_error(msg.str()); \
     } \
     return __cmock_real_##c##_##n(cmock_a1, cmock_a2, cmock_a3, cmock_a4, \
@@ -221,7 +219,7 @@ static GMOCK_RESULT_(, F) (*__cmock_real_##c##_##n)(GMOCK_ARG_(, 1, \
  (GMOCK_RESULT_(, F) (*)(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
      F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
      GMOCK_ARG_(, 5, F) cmock_a5, GMOCK_ARG_(, 6, \
-     F) cmock_a6))cmock_lookup(#n, (const void *)&::n); \
+     F) cmock_a6))cmock_lookup(#n); \
 \
 GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
     F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
@@ -235,7 +233,7 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
     if (__cmock_real_##c##_##n == NULL) { \
         std::ostringstream msg; \
         msg << "Error: Function " << #n; \
-        msg << " not found - both mock and real function are missing"; \
+        msg << " not found. Neither mock nor real function is present."; \
         throw std::logic_error(msg.str()); \
     } \
     return __cmock_real_##c##_##n(cmock_a1, cmock_a2, cmock_a3, cmock_a4, \
@@ -250,7 +248,7 @@ static GMOCK_RESULT_(, F) (*__cmock_real_##c##_##n)(GMOCK_ARG_(, 1, \
  (GMOCK_RESULT_(, F) (*)(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
      F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
      GMOCK_ARG_(, 5, F) cmock_a5, GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, \
-     7, F) cmock_a7))cmock_lookup(#n, (const void *)&::n); \
+     7, F) cmock_a7))cmock_lookup(#n); \
 \
 GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
     F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
@@ -265,7 +263,7 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
     if (__cmock_real_##c##_##n == NULL) { \
         std::ostringstream msg; \
         msg << "Error: Function " << #n; \
-        msg << " not found - both mock and real function are missing"; \
+        msg << " not found. Neither mock nor real function is present."; \
         throw std::logic_error(msg.str()); \
     } \
     return __cmock_real_##c##_##n(cmock_a1, cmock_a2, cmock_a3, cmock_a4, \
@@ -281,8 +279,7 @@ static GMOCK_RESULT_(, F) (*__cmock_real_##c##_##n)(GMOCK_ARG_(, 1, \
  (GMOCK_RESULT_(, F) (*)(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
      F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
      GMOCK_ARG_(, 5, F) cmock_a5, GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, \
-     7, F) cmock_a7, GMOCK_ARG_(, 8, F) cmock_a8))cmock_lookup(#n, \
-     (const void *)&::n); \
+     7, F) cmock_a7, GMOCK_ARG_(, 8, F) cmock_a8))cmock_lookup(#n); \
 \
 GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
     F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
@@ -297,7 +294,7 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
     if (__cmock_real_##c##_##n == NULL) { \
         std::ostringstream msg; \
         msg << "Error: Function " << #n; \
-        msg << " not found - both mock and real function are missing"; \
+        msg << " not found. Neither mock nor real function is present."; \
         throw std::logic_error(msg.str()); \
     } \
     return __cmock_real_##c##_##n(cmock_a1, cmock_a2, cmock_a3, cmock_a4, \
@@ -314,7 +311,7 @@ static GMOCK_RESULT_(, F) (*__cmock_real_##c##_##n)(GMOCK_ARG_(, 1, \
      F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
      GMOCK_ARG_(, 5, F) cmock_a5, GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, \
      7, F) cmock_a7, GMOCK_ARG_(, 8, F) cmock_a8, GMOCK_ARG_(, 9, \
-     F) cmock_a9))cmock_lookup(#n, (const void *)&::n); \
+     F) cmock_a9))cmock_lookup(#n); \
 \
 GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
     F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
@@ -330,7 +327,7 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
     if (__cmock_real_##c##_##n == NULL) { \
         std::ostringstream msg; \
         msg << "Error: Function " << #n; \
-        msg << " not found - both mock and real function are missing"; \
+        msg << " not found. Neither mock nor real function is present."; \
         throw std::logic_error(msg.str()); \
     } \
     return __cmock_real_##c##_##n(cmock_a1, cmock_a2, cmock_a3, cmock_a4, \
@@ -347,8 +344,7 @@ static GMOCK_RESULT_(, F) (*__cmock_real_##c##_##n)(GMOCK_ARG_(, 1, \
      F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
      GMOCK_ARG_(, 5, F) cmock_a5, GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, \
      7, F) cmock_a7, GMOCK_ARG_(, 8, F) cmock_a8, GMOCK_ARG_(, 9, \
-     F) cmock_a9, GMOCK_ARG_(, 10, F) cmock_a10))cmock_lookup(#n, \
-     (const void *)&::n); \
+     F) cmock_a9, GMOCK_ARG_(, 10, F) cmock_a10))cmock_lookup(#n); \
 \
 GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
     F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
@@ -364,7 +360,7 @@ GMOCK_RESULT_(, F) n(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
     if (__cmock_real_##c##_##n == NULL) { \
         std::ostringstream msg; \
         msg << "Error: Function " << #n; \
-        msg << " not found - both mock and real function are missing"; \
+        msg << " not found. Neither mock nor real function is present."; \
         throw std::logic_error(msg.str()); \
     } \
     return __cmock_real_##c##_##n(cmock_a1, cmock_a2, cmock_a3, cmock_a4, \

@@ -72,7 +72,7 @@ T *CMockMocker<T>::instance = NULL;
 
 // Find the real implementation of a mocked function
 static inline void *
-cmock_lookup(const char *fname, const void *)
+cmock_lookup(const char *fname)
 {
     return dlsym(RTLD_NEXT, fname);
 }
@@ -87,7 +87,7 @@ $var matcher_args = [[$for j, [[GMOCK_MATCHER_(, $j, F) cmock_a$j]]]]
 
 #define CMOCK_MOCK_FUNCTION$i(c, n, F) \
 static GMOCK_RESULT_(, F) (*__cmock_real_##c##_##n)($declare_args) = \
-	(GMOCK_RESULT_(, F) (*)($declare_args))cmock_lookup(#n, (const void *)&::n); \
+	(GMOCK_RESULT_(, F) (*)($declare_args))cmock_lookup(#n); \
 \
 GMOCK_RESULT_(, F) n($declare_args) { \
     c *mock = c::cmock_get_instance(); \
@@ -98,7 +98,7 @@ GMOCK_RESULT_(, F) n($declare_args) { \
     if (__cmock_real_##c##_##n == NULL) { \
         std::ostringstream msg; \
         msg << "Error: Function " << #n; \
-        msg << " not found - both mock and real function are missing"; \
+        msg << " not found. Neither mock nor real function is present."; \
         throw std::logic_error(msg.str()); \
     } \
     return __cmock_real_##c##_##n($call_args); \

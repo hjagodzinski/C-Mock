@@ -10,6 +10,7 @@ class MathMocker : public CMockMocker<MathMocker>
 public:
     MOCK_METHOD2(divide, int(int, int));
     MOCK_METHOD2(substract, int(int, int));
+    MOCK_METHOD1(negate, int(int));
 };
 
 #endif /* CMOCK_TEST_MATH_MOCKER_H_ */
