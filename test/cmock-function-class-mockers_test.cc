@@ -30,7 +30,7 @@ TEST(FunctionClassMockersTest, ExceptionIfNotFound) {
 		MathMocker mock;
 
 		EXPECT_CALL(mock, negate(3)).WillOnce(Return(-3));
-		ASSERT_EQ(3, square_root(9));
+		ASSERT_EQ(-3, negate(3));
 	}
 
 	EXPECT_THROW(negate(3), std::logic_error);
