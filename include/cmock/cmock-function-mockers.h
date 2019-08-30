@@ -55,7 +55,7 @@ class c \
         ~c(); \
 \
         GMOCK_RESULT_(, F) operator()(); \
-        ::testing::MockSpec<F>& cmock_func(); \
+        ::testing::MockSpec<F> cmock_func(); \
 \
     private: \
         static func_type lookup(); \
@@ -78,14 +78,14 @@ c::~c() { \
 } \
 \
 GMOCK_RESULT_(, F) c::operator()() { \
-    GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
+    GTEST_COMPILE_ASSERT_(::std::tuple_size< \
     ::testing::internal::Function<F>::ArgumentTuple>::value == 0, \
      this_method_does_not_take_0_arguments); \
      mocker.SetOwnerAndName(this, #n); \
      return mocker.Invoke(); \
 } \
 \
-::testing::MockSpec<F>& c::cmock_func() { \
+::testing::MockSpec<F> c::cmock_func() { \
     mocker.RegisterOwner(this); \
     return mocker.With(); \
 } \
@@ -127,7 +127,7 @@ class c \
         ~c(); \
 \
         GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, 1, F) cmock_a1); \
-        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1); \
+        ::testing::MockSpec<F> cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1); \
 \
     private: \
         static func_type lookup(); \
@@ -150,14 +150,14 @@ c::~c() { \
 } \
 \
 GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, 1, F) cmock_a1) { \
-    GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
+    GTEST_COMPILE_ASSERT_(::std::tuple_size< \
     ::testing::internal::Function<F>::ArgumentTuple>::value == 1, \
      this_method_does_not_take_1_argument); \
      mocker.SetOwnerAndName(this, #n); \
      return mocker.Invoke(cmock_a1); \
 } \
 \
-::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1) { \
+::testing::MockSpec<F> c::cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1) { \
     mocker.RegisterOwner(this); \
     return mocker.With(cmock_a1); \
 } \
@@ -201,7 +201,7 @@ class c \
 \
         GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, 1, F) cmock_a1, \
             GMOCK_ARG_(, 2, F) cmock_a2); \
-        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+        ::testing::MockSpec<F> cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
             GMOCK_MATCHER_(, 2, F) cmock_a2); \
 \
     private: \
@@ -228,14 +228,14 @@ c::~c() { \
 \
 GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
     F) cmock_a2) { \
-    GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
+    GTEST_COMPILE_ASSERT_(::std::tuple_size< \
     ::testing::internal::Function<F>::ArgumentTuple>::value == 2, \
      this_method_does_not_take_2_arguments); \
      mocker.SetOwnerAndName(this, #n); \
      return mocker.Invoke(cmock_a1, cmock_a2); \
 } \
 \
-::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+::testing::MockSpec<F> c::cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
     GMOCK_MATCHER_(, 2, F) cmock_a2) { \
     mocker.RegisterOwner(this); \
     return mocker.With(cmock_a1, cmock_a2); \
@@ -282,7 +282,7 @@ class c \
 \
         GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, 1, F) cmock_a1, \
             GMOCK_ARG_(, 2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3); \
-        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+        ::testing::MockSpec<F> cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
             GMOCK_MATCHER_(, 2, F) cmock_a2, GMOCK_MATCHER_(, 3, \
             F) cmock_a3); \
 \
@@ -310,14 +310,14 @@ c::~c() { \
 \
 GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
     F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3) { \
-    GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
+    GTEST_COMPILE_ASSERT_(::std::tuple_size< \
     ::testing::internal::Function<F>::ArgumentTuple>::value == 3, \
      this_method_does_not_take_3_arguments); \
      mocker.SetOwnerAndName(this, #n); \
      return mocker.Invoke(cmock_a1, cmock_a2, cmock_a3); \
 } \
 \
-::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+::testing::MockSpec<F> c::cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
     GMOCK_MATCHER_(, 2, F) cmock_a2, GMOCK_MATCHER_(, 3, F) cmock_a3) { \
     mocker.RegisterOwner(this); \
     return mocker.With(cmock_a1, cmock_a2, cmock_a3); \
@@ -366,7 +366,7 @@ class c \
         GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, 1, F) cmock_a1, \
             GMOCK_ARG_(, 2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, \
             GMOCK_ARG_(, 4, F) cmock_a4); \
-        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+        ::testing::MockSpec<F> cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
             GMOCK_MATCHER_(, 2, F) cmock_a2, GMOCK_MATCHER_(, 3, F) cmock_a3, \
             GMOCK_MATCHER_(, 4, F) cmock_a4); \
 \
@@ -397,14 +397,14 @@ c::~c() { \
 GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
     F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, \
     F) cmock_a4) { \
-    GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
+    GTEST_COMPILE_ASSERT_(::std::tuple_size< \
     ::testing::internal::Function<F>::ArgumentTuple>::value == 4, \
      this_method_does_not_take_4_arguments); \
      mocker.SetOwnerAndName(this, #n); \
      return mocker.Invoke(cmock_a1, cmock_a2, cmock_a3, cmock_a4); \
 } \
 \
-::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+::testing::MockSpec<F> c::cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
     GMOCK_MATCHER_(, 2, F) cmock_a2, GMOCK_MATCHER_(, 3, F) cmock_a3, \
     GMOCK_MATCHER_(, 4, F) cmock_a4) { \
     mocker.RegisterOwner(this); \
@@ -456,7 +456,7 @@ class c \
         GMOCK_RESULT_(, F) operator()(GMOCK_ARG_(, 1, F) cmock_a1, \
             GMOCK_ARG_(, 2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, \
             GMOCK_ARG_(, 4, F) cmock_a4, GMOCK_ARG_(, 5, F) cmock_a5); \
-        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+        ::testing::MockSpec<F> cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
             GMOCK_MATCHER_(, 2, F) cmock_a2, GMOCK_MATCHER_(, 3, F) cmock_a3, \
             GMOCK_MATCHER_(, 4, F) cmock_a4, GMOCK_MATCHER_(, 5, \
             F) cmock_a5); \
@@ -488,14 +488,14 @@ c::~c() { \
 GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
     F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
     GMOCK_ARG_(, 5, F) cmock_a5) { \
-    GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
+    GTEST_COMPILE_ASSERT_(::std::tuple_size< \
     ::testing::internal::Function<F>::ArgumentTuple>::value == 5, \
      this_method_does_not_take_5_arguments); \
      mocker.SetOwnerAndName(this, #n); \
      return mocker.Invoke(cmock_a1, cmock_a2, cmock_a3, cmock_a4, cmock_a5); \
 } \
 \
-::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+::testing::MockSpec<F> c::cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
     GMOCK_MATCHER_(, 2, F) cmock_a2, GMOCK_MATCHER_(, 3, F) cmock_a3, \
     GMOCK_MATCHER_(, 4, F) cmock_a4, GMOCK_MATCHER_(, 5, F) cmock_a5) { \
     mocker.RegisterOwner(this); \
@@ -549,7 +549,7 @@ class c \
             GMOCK_ARG_(, 2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, \
             GMOCK_ARG_(, 4, F) cmock_a4, GMOCK_ARG_(, 5, F) cmock_a5, \
             GMOCK_ARG_(, 6, F) cmock_a6); \
-        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+        ::testing::MockSpec<F> cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
             GMOCK_MATCHER_(, 2, F) cmock_a2, GMOCK_MATCHER_(, 3, F) cmock_a3, \
             GMOCK_MATCHER_(, 4, F) cmock_a4, GMOCK_MATCHER_(, 5, F) cmock_a5, \
             GMOCK_MATCHER_(, 6, F) cmock_a6); \
@@ -583,7 +583,7 @@ c::~c() { \
 GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
     F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
     GMOCK_ARG_(, 5, F) cmock_a5, GMOCK_ARG_(, 6, F) cmock_a6) { \
-    GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
+    GTEST_COMPILE_ASSERT_(::std::tuple_size< \
     ::testing::internal::Function<F>::ArgumentTuple>::value == 6, \
      this_method_does_not_take_6_arguments); \
      mocker.SetOwnerAndName(this, #n); \
@@ -591,7 +591,7 @@ GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
          cmock_a6); \
 } \
 \
-::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+::testing::MockSpec<F> c::cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
     GMOCK_MATCHER_(, 2, F) cmock_a2, GMOCK_MATCHER_(, 3, F) cmock_a3, \
     GMOCK_MATCHER_(, 4, F) cmock_a4, GMOCK_MATCHER_(, 5, F) cmock_a5, \
     GMOCK_MATCHER_(, 6, F) cmock_a6) { \
@@ -649,7 +649,7 @@ class c \
             GMOCK_ARG_(, 2, F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, \
             GMOCK_ARG_(, 4, F) cmock_a4, GMOCK_ARG_(, 5, F) cmock_a5, \
             GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, 7, F) cmock_a7); \
-        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+        ::testing::MockSpec<F> cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
             GMOCK_MATCHER_(, 2, F) cmock_a2, GMOCK_MATCHER_(, 3, F) cmock_a3, \
             GMOCK_MATCHER_(, 4, F) cmock_a4, GMOCK_MATCHER_(, 5, F) cmock_a5, \
             GMOCK_MATCHER_(, 6, F) cmock_a6, GMOCK_MATCHER_(, 7, \
@@ -685,7 +685,7 @@ GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
     F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
     GMOCK_ARG_(, 5, F) cmock_a5, GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, 7, \
     F) cmock_a7) { \
-    GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
+    GTEST_COMPILE_ASSERT_(::std::tuple_size< \
     ::testing::internal::Function<F>::ArgumentTuple>::value == 7, \
      this_method_does_not_take_7_arguments); \
      mocker.SetOwnerAndName(this, #n); \
@@ -693,7 +693,7 @@ GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
          cmock_a6, cmock_a7); \
 } \
 \
-::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+::testing::MockSpec<F> c::cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
     GMOCK_MATCHER_(, 2, F) cmock_a2, GMOCK_MATCHER_(, 3, F) cmock_a3, \
     GMOCK_MATCHER_(, 4, F) cmock_a4, GMOCK_MATCHER_(, 5, F) cmock_a5, \
     GMOCK_MATCHER_(, 6, F) cmock_a6, GMOCK_MATCHER_(, 7, F) cmock_a7) { \
@@ -756,7 +756,7 @@ class c \
             GMOCK_ARG_(, 4, F) cmock_a4, GMOCK_ARG_(, 5, F) cmock_a5, \
             GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, 7, F) cmock_a7, \
             GMOCK_ARG_(, 8, F) cmock_a8); \
-        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+        ::testing::MockSpec<F> cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
             GMOCK_MATCHER_(, 2, F) cmock_a2, GMOCK_MATCHER_(, 3, F) cmock_a3, \
             GMOCK_MATCHER_(, 4, F) cmock_a4, GMOCK_MATCHER_(, 5, F) cmock_a5, \
             GMOCK_MATCHER_(, 6, F) cmock_a6, GMOCK_MATCHER_(, 7, F) cmock_a7, \
@@ -794,7 +794,7 @@ GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
     F) cmock_a2, GMOCK_ARG_(, 3, F) cmock_a3, GMOCK_ARG_(, 4, F) cmock_a4, \
     GMOCK_ARG_(, 5, F) cmock_a5, GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, 7, \
     F) cmock_a7, GMOCK_ARG_(, 8, F) cmock_a8) { \
-    GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
+    GTEST_COMPILE_ASSERT_(::std::tuple_size< \
     ::testing::internal::Function<F>::ArgumentTuple>::value == 8, \
      this_method_does_not_take_8_arguments); \
      mocker.SetOwnerAndName(this, #n); \
@@ -802,7 +802,7 @@ GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
          cmock_a6, cmock_a7, cmock_a8); \
 } \
 \
-::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+::testing::MockSpec<F> c::cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
     GMOCK_MATCHER_(, 2, F) cmock_a2, GMOCK_MATCHER_(, 3, F) cmock_a3, \
     GMOCK_MATCHER_(, 4, F) cmock_a4, GMOCK_MATCHER_(, 5, F) cmock_a5, \
     GMOCK_MATCHER_(, 6, F) cmock_a6, GMOCK_MATCHER_(, 7, F) cmock_a7, \
@@ -866,7 +866,7 @@ class c \
             GMOCK_ARG_(, 4, F) cmock_a4, GMOCK_ARG_(, 5, F) cmock_a5, \
             GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, 7, F) cmock_a7, \
             GMOCK_ARG_(, 8, F) cmock_a8, GMOCK_ARG_(, 9, F) cmock_a9); \
-        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+        ::testing::MockSpec<F> cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
             GMOCK_MATCHER_(, 2, F) cmock_a2, GMOCK_MATCHER_(, 3, F) cmock_a3, \
             GMOCK_MATCHER_(, 4, F) cmock_a4, GMOCK_MATCHER_(, 5, F) cmock_a5, \
             GMOCK_MATCHER_(, 6, F) cmock_a6, GMOCK_MATCHER_(, 7, F) cmock_a7, \
@@ -906,7 +906,7 @@ GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
     GMOCK_ARG_(, 5, F) cmock_a5, GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, 7, \
     F) cmock_a7, GMOCK_ARG_(, 8, F) cmock_a8, GMOCK_ARG_(, 9, \
     F) cmock_a9) { \
-    GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
+    GTEST_COMPILE_ASSERT_(::std::tuple_size< \
     ::testing::internal::Function<F>::ArgumentTuple>::value == 9, \
      this_method_does_not_take_9_arguments); \
      mocker.SetOwnerAndName(this, #n); \
@@ -914,7 +914,7 @@ GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
          cmock_a6, cmock_a7, cmock_a8, cmock_a9); \
 } \
 \
-::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+::testing::MockSpec<F> c::cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
     GMOCK_MATCHER_(, 2, F) cmock_a2, GMOCK_MATCHER_(, 3, F) cmock_a3, \
     GMOCK_MATCHER_(, 4, F) cmock_a4, GMOCK_MATCHER_(, 5, F) cmock_a5, \
     GMOCK_MATCHER_(, 6, F) cmock_a6, GMOCK_MATCHER_(, 7, F) cmock_a7, \
@@ -982,7 +982,7 @@ class c \
             GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, 7, F) cmock_a7, \
             GMOCK_ARG_(, 8, F) cmock_a8, GMOCK_ARG_(, 9, F) cmock_a9, \
             GMOCK_ARG_(, 10, F) cmock_a10); \
-        ::testing::MockSpec<F>& cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+        ::testing::MockSpec<F> cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
             GMOCK_MATCHER_(, 2, F) cmock_a2, GMOCK_MATCHER_(, 3, F) cmock_a3, \
             GMOCK_MATCHER_(, 4, F) cmock_a4, GMOCK_MATCHER_(, 5, F) cmock_a5, \
             GMOCK_MATCHER_(, 6, F) cmock_a6, GMOCK_MATCHER_(, 7, F) cmock_a7, \
@@ -1024,7 +1024,7 @@ GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
     GMOCK_ARG_(, 5, F) cmock_a5, GMOCK_ARG_(, 6, F) cmock_a6, GMOCK_ARG_(, 7, \
     F) cmock_a7, GMOCK_ARG_(, 8, F) cmock_a8, GMOCK_ARG_(, 9, F) cmock_a9, \
     GMOCK_ARG_(, 10, F) cmock_a10) { \
-    GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
+    GTEST_COMPILE_ASSERT_(::std::tuple_size< \
     ::testing::internal::Function<F>::ArgumentTuple>::value == 10, \
      this_method_does_not_take_10_arguments); \
      mocker.SetOwnerAndName(this, #n); \
@@ -1032,7 +1032,7 @@ GMOCK_RESULT_(, F) c::operator()(GMOCK_ARG_(, 1, F) cmock_a1, GMOCK_ARG_(, 2, \
          cmock_a6, cmock_a7, cmock_a8, cmock_a9, cmock_a10); \
 } \
 \
-::testing::MockSpec<F>& c::cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
+::testing::MockSpec<F> c::cmock_func(GMOCK_MATCHER_(, 1, F) cmock_a1, \
     GMOCK_MATCHER_(, 2, F) cmock_a2, GMOCK_MATCHER_(, 3, F) cmock_a3, \
     GMOCK_MATCHER_(, 4, F) cmock_a4, GMOCK_MATCHER_(, 5, F) cmock_a5, \
     GMOCK_MATCHER_(, 6, F) cmock_a6, GMOCK_MATCHER_(, 7, F) cmock_a7, \
