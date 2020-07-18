@@ -12,7 +12,7 @@ This is neither a patch to nor fork of Google Mock. This is just a set of header
 
 C Mock is not intended to promote a bad design. Its goal is to aid the developers test their code.
 
-Before use of C Mock following reading is recommended:
+Before use of C Mock the following reading is recommended:
 
 * [My code calls a static/global function. Can I mock it?][2]
 * [Defeat "Static Cling"][3]
@@ -20,8 +20,8 @@ Before use of C Mock following reading is recommended:
 Requirements
 ------------
 
-* Google Mock (1.6 or newer)
-* GNU/Linux platform that Google Mock supports
+* Google Test (1.8 or newer)
+* GNU/Linux environment that Google Test supports
 
 Guide
 -----
@@ -62,7 +62,7 @@ CMOCK_MOCK_FUNCTION2(MathMocker, substract, int(int, int));
 
 #### Specifying expectations ####
 
-To specify the expectations you use Google Mock's macros as you would normally do. The functions are mocked as long as its corresponding mocker class instance exists. This allows to easily control when the functions are mocked.
+To specify the expectations you use Google Mock's macros as you normally would do. The functions are mocked as long as its corresponding mocker class instance exists. This allows to easily control when the functions are mocked. If a mocker class instance does not exist, the real function is called.
 
 ```cpp
 {
@@ -145,14 +145,14 @@ foo(1, 2); // calling the real function
 
 ### Building ###
 
-C Mock uses internally some tricks specific to GNU/Linux platform and a test building requires a few additional steps.
+C Mock uses specific GNU/Linux features internally and a test building requires a few additional steps.
 
-Firstly, all functions you want to mock must be in a dynamic library. If it includes your project-specific functions you must put them into a dynamic library. In such a circumstances it seems reasonable to build all code under test as a dynamic library. Selecting only those parts that you are going to mock might be tedious and cumbersome.
+Firstly, all functions you want to mock must be compiled into a dynamic library. If it includes your project-specific functions you must put them into a dynamic library as well. In such circumstances it seems reasonable to build all code under test as a dynamic library. Selecting only those parts that you are going to mock might be tedious and cumbersome.
 
 Secondly, you must pass the following options to a linker when building a test executable:
 
 * *-rdynamic* - adds all symbols to dynamic symbol table
-* *-Wl,--no-as-needed* - links with library when during static linking there are no dependencies to it
+* *-Wl,--no-as-needed* - forces to link with library during static linking when there are no dependencies to it
 * *-ldl* - links with dynamic linking loader library
 
 C Mock comes with *cmock-config* tool to hide all these details away from you. Run
@@ -169,9 +169,7 @@ cmock-config --libs [path to libgmock [path to libgtest]]
 
 to get the compilations and linker options, respectively.
 
-Note: Since [it is not recommended to install a pre-compiled version of Google Test][4] many distributions don't provide such libs anymore. You need to download and compile those libs as described in [Google Test][1].
-For the linker to find libgmock and libgtest you can pass the paths to those libs to the cmock-config script.
-If you omit the path to libgtest it defaults to "pathToLibgmock/libgtest".
+Note: Since [it is not recommended to install a pre-compiled version of Google Test][4] many distributions don't provide pre-compiled Google Test anymore. You need to download and compile Google Test manually as described in [Google Test][1]. For the linker to find libgmock and libgtest you can pass the paths to them to the cmock-config script. If you omit the path to libgtest it defaults to "pathToLibgmock/libgtest".
 
 Let's say you built a code under test into *libfoo.so* and put a test code in *bar.cc*. To build your test executable you would run:
 
@@ -206,7 +204,7 @@ make install PREFIX=/usr
 Test
 ----
 
-If your platform is supported and Google Test is installed, the following commands should succeed:
+If your environment is supported and Google Test is installed, the following commands should succeed:
 
 ```
 make
