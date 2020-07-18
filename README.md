@@ -223,6 +223,6 @@ References
 * [Why is it not recommended to install a pre-compiled copy of Google Test (for example, into /usr/local)][4]
 
 [1]: https://github.com/google/googletest "Google Test"
-[2]: https://github.com/google/googlemock/blob/master/googlemock/docs/FrequentlyAskedQuestions.md#my-code-calls-a-staticglobal-function--can-i-mock-it "My code calls a static/global function. Can I mock it?"
+[2]: https://github.com/google/googletest/blob/3cfb4117f7e56f8a7075d83f3e59551dc9e9f328/googlemock/docs/gmock_faq.md#my-code-calls-a-staticglobal-function-can-i-mock-it "My code calls a static/global function. Can I mock it?"
 [3]: https://googletesting.blogspot.com/2008/06/defeat-static-cling.html "Defeat \"Static Cling\""
-[4]: https://github.com/google/googletest/blob/master/googletest/docs/FAQ.md#why-is-it-not-recommended-to-install-a-pre-compiled-copy-of-google-test-for-example-into-usrlocal "Why is it not recommended to install a pre-compiled copy of Google Test (for example, into /usr/local)"
+[4]: https://github.com/google/googletest/blob/36066cfecf79267bdf46ff82ca6c3b052f8f633c/googletest/docs/faq.md#why-is-it-not-recommended-to-install-a-pre-compiled-copy-of-google-test-for-example-into-usrlocal "Why is it not recommended to install a pre-compiled copy of Google Test (for example, into /usr/local)"
