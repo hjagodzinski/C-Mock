@@ -64,7 +64,7 @@ class c \
         ~c(); \
 \
         GMOCK_RESULT_(, F) operator()($declare_args); \
-        ::testing::MockSpec<F>& cmock_func($matcher_args); \
+        ::testing::MockSpec<F> cmock_func($matcher_args); \
 \
     private: \
         static func_type lookup(); \
@@ -87,14 +87,14 @@ c::~c() { \
 } \
 \
 GMOCK_RESULT_(, F) c::operator()($declare_args) { \
-    GTEST_COMPILE_ASSERT_(::std::tr1::tuple_size< \
+    GTEST_COMPILE_ASSERT_(::std::tuple_size< \
     ::testing::internal::Function<F>::ArgumentTuple>::value == $i, \
      this_method_does_not_take_$i[[]]_argument[[$if i != 1 [[s]]]]); \
      mocker.SetOwnerAndName(this, #n); \
      return mocker.Invoke($call_args); \
 } \
 \
-::testing::MockSpec<F>& c::cmock_func($matcher_args) { \
+::testing::MockSpec<F> c::cmock_func($matcher_args) { \
     mocker.RegisterOwner(this); \
     return mocker.With($call_args); \
 } \
