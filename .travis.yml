@@ -1,21 +1,13 @@
-language: c
+language: c++
 
 sudo: required
-dist: trusty
-
-addons:
-  apt:
-    packages:
-    - cmake
-
-compiler:
-    - gcc
+dist: bionic
 
 before_script:
-    - wget https://github.com/google/googletest/archive/release-1.8.0.tar.gz
+    - wget https://github.com/google/googletest/archive/release-1.10.0.tar.gz
     - mkdir gtest
-    - tar -C gtest --strip-components=1 -xzf release-1.8.0.tar.gz
-    - rm release-1.8.0.tar.gz
+    - tar -C gtest --strip-components=1 -xzf release-1.10.0.tar.gz
+    - rm release-1.10.0.tar.gz
     - cd gtest
     - cmake CMakeLists.txt
     - make
