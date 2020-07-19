@@ -1,5 +1,9 @@
 PREFIX=/usr/local
 
+ifdef GTEST_DIR
+	GTEST_DIR:=$(shell readlink -f "$(GTEST_DIR)" | sed 's/ /\\ /')
+endif
+
 all: test/cmock_test
 
 clean:
