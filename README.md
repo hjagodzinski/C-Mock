@@ -158,18 +158,18 @@ Secondly, you must pass the following options to a linker when building a test e
 C Mock comes with *cmock-config* tool to hide all these details away from you. Run
 
 ```
-cmock-config --cflags
+cmock-config --cflags [path to Google Test]
 ```
 
 and
 
 ```
-cmock-config --libs [path to libgmock [path to libgtest]]
+cmock-config --libs [path to Google Test]
 ```
 
 to get the compilations and linker options, respectively.
 
-Note: Since [it is not recommended to install a pre-compiled version of Google Test][4] many distributions don't provide pre-compiled Google Test anymore. You need to download and compile Google Test manually as described in [Google Test][1]. For the linker to find libgmock and libgtest you can pass the paths to them to the cmock-config script. If you omit the path to libgtest it defaults to "pathToLibgmock/libgtest".
+Since [it is not recommended to install a pre-compiled version of Google Test][4] many distributions don't provide pre-compiled Google Test anymore. You need to download and compile Google Test manually as described in [Google Test][1]. Optional second command argument is a path to a directory contaning downloaded and built Google Test.
 
 Let's say you built a code under test into *libfoo.so* and put a test code in *bar.cc*. To build your test executable you would run:
 
@@ -209,6 +209,12 @@ If your environment is supported and Google Test is installed, the following com
 ```
 make
 make test
+```
+
+Optionally you can provide a directory containing downloaded and built Google Test by setting _GTEST\_DIR_:
+
+```
+GTEST_DIR=/path/to/googletest make
 ```
 
 Tests are quite simple and are a good source of usage examples.

@@ -1,6 +1,5 @@
 language: c++
 
-sudo: required
 dist: bionic
 
 before_script:
@@ -11,8 +10,7 @@ before_script:
     - cd gtest
     - cmake CMakeLists.txt
     - make
-    - sudo make install
     - cd ..
-    - make
+    - GTEST_DIR=./gtest make
 
 script: make test
