@@ -20,7 +20,7 @@ Before use of C Mock the following reading is recommended:
 Requirements
 ------------
 
-* Google Test (1.8 or newer)
+* Google Test (for 1.10 support use release [v0.3.1](https://github.com/hjagodzinski/C-Mock/releases/tag/v0.3.1))
 * GNU/Linux environment that Google Test supports
 
 Guide
