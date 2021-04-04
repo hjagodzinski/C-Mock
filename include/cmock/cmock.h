@@ -1,4 +1,4 @@
-// Copyright 2013, Hubert Jagodziński
+// Copyright 2021, Hubert Jagodziński
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -26,9 +26,9 @@
 //
 // Author: hubert.jagodzinski@gmail.com (Hubert Jagodziński)
 
-// C Mock - extension to Google Mock framework allowing for writing C mock functions.
+// C Mock - Google Mock's extension allowing a function mocking.
 //
-// This is the main header file a user should include.
+// This is the main header file an user should include.
 
 #ifndef CMOCK_INCLUDE_CMOCK_CMOCK_H_
 #define CMOCK_INCLUDE_CMOCK_CMOCK_H_

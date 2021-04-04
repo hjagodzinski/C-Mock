@@ -1,4 +1,4 @@
-// Copyright 2013, Hubert Jagodziński
+// Copyright 2021, Hubert Jagodziński
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -26,9 +26,9 @@
 //
 // Author: hubert.jagodzinski@gmail.com (Hubert Jagodziński)
 
-// C Mock - extension to Google Mock framework allowing for writing C mock functions.
+// C Mock - Google Mock's extension allowing a function mocking.
 //
-// This file implements the ON_FUNCTION_CALL() and EXPECT_FUNCTION_CALL() macros.
+// This file implements ON_FUNCTION_CALL() and EXPECT_FUNCTION_CALL() macros.
 
 #ifndef CMOCK_INCLUDE_CMOCK_CMOCK_SPEC_BUILDERS_H_
 #define CMOCK_INCLUDE_CMOCK_CMOCK_SPEC_BUILDERS_H_

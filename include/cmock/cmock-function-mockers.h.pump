@@ -4,7 +4,7 @@ $$ cmock-function-mockers.h.  Pump (pump.py) can be found in
 $$ googletest/scripts.
 $$
 $var n = 10  $$ The maximum arity we support.
-// Copyright 2013, Hubert Jagodziński
+// Copyright 2021, Hubert Jagodziński
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -32,9 +32,9 @@ $var n = 10  $$ The maximum arity we support.
 //
 // Author: hubert.jagodzinski@gmail.com (Hubert Jagodziński)
 
-// C Mock - extension to Google Mock framework allowing for writing C mock functions.
+// C Mock - Google Mock's extension allowing a function mocking.
 //
-// This file implements C function mockers of various arities.
+// This file implements DECLARE_FUNCTION_MOCKn() and IMPLEMENT_FUNCTION_MOCKn() macros of various arities.
 
 #ifndef CMOCK_INCLUDE_CMOCK_CMOCK_FUNCTION_MOCKERS_H_
 #define CMOCK_INCLUDE_CMOCK_CMOCK_FUNCTION_MOCKERS_H_
