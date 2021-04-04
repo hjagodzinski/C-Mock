@@ -1,7 +1,6 @@
 #include <cmock/cmock.h>
 
-#include "add_function_mock.h"
-#include "square_root_function_mock.h"
+#include "math_mockers.h"
 
 using namespace ::testing;
 

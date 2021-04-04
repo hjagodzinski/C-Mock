@@ -6,7 +6,7 @@ using namespace ::testing;
 
 /**
  * Functions add and substract are mocked as long as MathMocker instance exists.
- * Once mock function is destroyed, call directs to real function.
+ * Once a mock function is destroyed, a call directs to a real function.
  */
 TEST(FunctionClassMockersTest, FunctionsAreMockedAsLongAsMockerInstanceExists) {
 

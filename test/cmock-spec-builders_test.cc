@@ -1,6 +1,6 @@
 #include <cmock/cmock.h>
 
-#include "add_function_mock.h"
+#include "math_mockers.h"
 
 TEST(SpecBuildersTest, ExpectFunctionCallCompiles) {
   AddFunctionMock mock;
