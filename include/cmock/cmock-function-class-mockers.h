@@ -28,8 +28,8 @@
 
 // C Mock - Google Mock's extension allowing a function mocking.
 //
-// This file implements CMockMocker class and CMOCK_MOCK_FUNCTIONn() macros of
-// various arities.
+// This file implements CMockMocker class, the generic macro CMOCK_MOCK_FUNCTION
+// and old-style CMOCK_MOCK_FUNCTIONn() macros of various arities.
 
 #ifndef CMOCK_INCLUDE_CMOCK_CMOCK_FUNCTION_CLASS_MOCKERS_H_
 #define CMOCK_INCLUDE_CMOCK_CMOCK_FUNCTION_CLASS_MOCKERS_H_
@@ -92,6 +92,9 @@ cmock_lookup(const char *fname)
         } \
         return __cmock_real_##_ClassName##_##_FunctionName(GMOCK_PP_REPEAT(GMOCK_INTERNAL_FORWARD_ARG, _Signature, _N)); \
     }
+
+#define CMOCK_MOCK_FUNCTION(_ClassName,  _Ret, _FunctionName, _Args) \
+    CMOCK_INTERNAL_MOCK_FUNCTIONN(_ClassName, _FunctionName, GMOCK_PP_NARG0 _Args, (GMOCK_INTERNAL_SIGNATURE(_Ret, _Args)))
 
 #define CMOCK_MOCK_FUNCTION0(c, n, ...) \
     CMOCK_INTERNAL_MOCK_FUNCTIONN(c, n, 0, (::testing::internal::identity_t<__VA_ARGS__>))

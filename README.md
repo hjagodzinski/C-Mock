@@ -30,9 +30,11 @@ C Mock requires no prior build, it is just a set of header files you include in 
 
 ### Using CMockMocker class ###
 
-C Mock comes with *CMockMocker* class and CMOCK\_MOCK\_FUNCTION* set of macros.
+C Mock comes with *CMockMocker* class and the generic macro CMOCK\_MOCK\_FUNCTION.
 
 #### Creating mock ####
+
+C Mock has no knowledge whether a mocked function is declared with a name mangling - whether this is a pure C function or a C++ function. Therefore C Mock does not redeclare mocked function. Original function prototype declaration should be used (i.e. use of original function header file).
 
 Suppose you want to mock *int divide(int, int)* and *int substract(int, int)* functions declared in *math.h* header file. To do that you can create a single mock class for both of them called *MathMocker*:
 
@@ -46,8 +48,8 @@ Suppose you want to mock *int divide(int, int)* and *int substract(int, int)* fu
 class MathMocker : public CMockMocker<MathMocker>
 {
 public:
-    MOCK_METHOD2(divide, int(int, int));
-    MOCK_METHOD2(substract, int(int, int));
+    MOCK_METHOD(int, divide, (int, int));
+    MOCK_METHOD(int, substract, (int, int));
 };
 ```
 
@@ -56,8 +58,8 @@ public:
 ```cpp
 #include "math_mocker.h"
 
-CMOCK_MOCK_FUNCTION2(MathMocker, divide, int(int, int));
-CMOCK_MOCK_FUNCTION2(MathMocker, substract, int(int, int));
+CMOCK_MOCK_FUNCTION(MathMocker, int, divide, (int, int));
+CMOCK_MOCK_FUNCTION(MathMocker, int, substract, (int, int));
 ```
 
 #### Specifying expectations ####
@@ -79,19 +81,21 @@ ASSERT_EQ(1, divide(1, 1)); // calling the real function
 ASSERT_EQ(-1, substract(1, 2)); // calling the real function
 ```
 
+Before the generic `CMOCK_MOCK_FUNCTION` macro was introduced, function mocks where created using macros `CMOCK_MOCK_FUNCTIONn`. These macros are still supported, though migration to the new `CMOCK_MOCK_FUNCTION` is recommended. For instance `CMOCK_MOCK_FUNCTION(MathMocker, int, divide, (int, int))` is equivalent to `CMOCK_MOCK_FUNCTION2(MathMocker, divide, int(int, int))`.
+
 ### Using macros (deprecated) ###
 
 C Mock comes with four macros:
 
-* DECLARE\_FUNCTION\_MOCK\* and IMPLEMENT\_FUNCTION\_MOCK\*
-* EXPECT\_FUNCTION\_CALL
-* ON\_FUNCTION\_CALL
+* `DECLARE_FUNCTION_MOCKn` and `IMPLEMENT_FUNCTION_MOCKn`
+* `EXPECT_FUNCTION_CALL`
+* `ON_FUNCTION_CALL`
 
-These macros do what theirs' method counterparts do MOCK\_METHOD\_\*, EXPECT\_CALL and ON\_CALL, respectively. There are small differences though.
+These macros do what theirs' method counterparts do `MOCK_METHODn`, `EXPECT_CALL` and `ON_CALL`, respectively. There are small differences though.
 
 #### Creating mock ####
 
-In fact both DECLARE\_FUNCTION\_MOCK\* and IMPLEMENT\_FUNCTION\_MOCK\* stand for a series of macros for defining and implementing a function mock, respectively. These macros take three arguments: a mock class name, a function name and a function prototype.
+In fact both `DECLARE_FUNCTION_MOCKn` and `IMPLEMENT_FUNCTION_MOCKn` stand for a series of macros for defining and implementing a function mock, respectively. These macros take three arguments: a mock class name, a function name and a function prototype.
 
 C Mock internally redefines a function being mocked. Because only one implementation of a function might exist in an executable, a splitting of a declaration and implementation is necessary. Especially, if mocking a certain function takes place in a more than one compilation unit. Therefore declaration should be put in a header file whereas implementation in a source file.
 
@@ -117,7 +121,7 @@ Suppose you want to mock *int add(int, int)* function declared in *math.h* heade
 
 #### Specifying expectations ####
 
-EXPECT\_FUNCTION\_CALL and ON\_FUNCTION\_CALL do exactly what theirs' method equivalents. Both take two arguments: a mock class instance and the arguments you expect - there is no need to repeat function name since it is already known at this point. Suppose we expect *add* function to be called once with arguments *1* and *2*, and want it to return *12*:
+`EXPECT_FUNCTION_CALL` and `ON_FUNCTION_CALL` do exactly what theirs' method equivalents. Both take two arguments: a mock class instance and the arguments you expect - there is no need to repeat function name since it is already known at this point. Suppose we expect *add* function to be called once with arguments *1* and *2*, and want it to return *12*:
 
 ```cpp
 AddFunctionMock mock;
