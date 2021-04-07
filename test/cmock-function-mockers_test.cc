@@ -1,14 +1,20 @@
 #include <cmock/cmock.h>
 
-#include "math_mockers.h"
+#include "math.h"
 
 using namespace ::testing;
+
+DECLARE_FUNCTION_MOCK2(AddFunctionMock, add, int(int, int));
+DECLARE_FUNCTION_MOCK1(NegateFunctionMock, negate, int(int));
+
+IMPLEMENT_FUNCTION_MOCK2(AddFunctionMock, add, int(int, int));
+IMPLEMENT_FUNCTION_MOCK1(NegateFunctionMock, negate, int(int));
 
 /**
  * Function add is mocked as long as AddFunctionMock instance exists.
  * Once mock function is destroyed, a call directs to a real function.
  */
-TEST(FunctionMockersTest, FunctionIsMockedAsLongAsMockInstanceExists) {
+TEST(FunctionMockersTest, MocksFunctionAsLongAsMockInstanceExists) {
 
 	{
 		AddFunctionMock mock;
@@ -28,17 +34,17 @@ TEST(FunctionMockersTest, FunctionMockExportsRealFunctionPointer) {
 }
 
 /**
- * Function square_root doesn't exist, but can be mocked
+ * Function negate doesn't exist, but can be mocked.
  */
-TEST(FunctionMockersTest, FunctionDoesntExist)
+TEST(FunctionMockersTest, ThrowsExceptionIfRealFunctionNotFound)
 {
 	{
-		SqrtFunctionMock mock;
+		NegateFunctionMock mock;
 
 		EXPECT_FUNCTION_CALL(mock, (9)).WillOnce(Return(3));
 
-		ASSERT_EQ(3, square_root(9));
+		ASSERT_EQ(3, negate(9));
 	}
 
-	EXPECT_THROW(square_root(9), std::logic_error);
+	EXPECT_THROW(negate(9), std::logic_error);
 }

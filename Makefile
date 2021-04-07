@@ -4,7 +4,7 @@ ifdef GTEST_DIR
 	GTEST_DIR:=$(shell readlink -f "$(GTEST_DIR)" | sed 's/ /\\ /')
 endif
 
-all: test/cmock_test
+all: test-all
 
 clean:
 	make clean -C test
@@ -14,9 +14,9 @@ install:
 	cp -r include/cmock $(PREFIX)/include
 
 test:
-	./test/cmock_test
+	make run -C test
 
-test/cmock_test:
+test-all:
 	make -C test
 
 uninstall:

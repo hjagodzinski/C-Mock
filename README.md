@@ -10,9 +10,9 @@ C Mock is [Google Mock][1]'s extension allowing a function mocking.
 
 This is neither a patch to nor fork of Google Mock. This is just a set of headers providing a way to use tools for mock methods with mock functions in tests.
 
-C Mock is not intended to promote a bad design. Its goal is to aid the developers test their code.
+C Mock is not intended to promote a bad design. Its goal is to aid the developers to test their code.
 
-Before use of C Mock the following reading is recommended:
+Before the use of C Mock the following reading is recommended:
 
 * [My code calls a static/global function. Can I mock it?][2]
 * [Defeat "Static Cling"][3]
@@ -30,15 +30,15 @@ C Mock requires no prior build, it is just a set of header files you include in 
 
 ### Using CMockMocker class ###
 
-C Mock comes with *CMockMocker* class and the generic macro CMOCK\_MOCK\_FUNCTION.
+C Mock comes with the `CMockMocker` class and two generic macros `CMOCK_MOCK_METHOD` and `CMOCK_MOCK_FUNCTION`.
 
 #### Creating mock ####
 
-C Mock has no knowledge whether a mocked function is declared with a name mangling - whether this is a pure C function or a C++ function. Therefore C Mock does not redeclare mocked function. Original function prototype declaration should be used (i.e. use of original function header file).
+C Mock does not know whether a mocked function is declared with a name mangling - whether this is a pure C function or a C++ function. Therefore C Mock does not redeclare mocked function. Original function prototype declaration should be used (i.e. use of original function header file).
 
-Suppose you want to mock *int divide(int, int)* and *int substract(int, int)* functions declared in *math.h* header file. To do that you can create a single mock class for both of them called *MathMocker*:
+Suppose you want to mock `int add(int, int)` and `int substract(int, int)` functions declared in *math.h* header file. To do that you create a single mock class for both of them called `MathMocker`:
 
-* *math_mocker.h*:
+*math_mocker.h*
 
 ```cpp
 #include <cmock/cmock.h>
@@ -48,17 +48,17 @@ Suppose you want to mock *int divide(int, int)* and *int substract(int, int)* fu
 class MathMocker : public CMockMocker<MathMocker>
 {
 public:
-    MOCK_METHOD(int, divide, (int, int));
-    MOCK_METHOD(int, substract, (int, int));
+    CMOCK_MOCK_METHOD(int, add, (int, int));
+    CMOCK_MOCK_METHOD(int, substract, (int, int));
 };
 ```
 
-* *math_mocker.cc*:
+*math_mocker.cc*
 
 ```cpp
 #include "math_mocker.h"
 
-CMOCK_MOCK_FUNCTION(MathMocker, int, divide, (int, int));
+CMOCK_MOCK_FUNCTION(MathMocker, int, add, (int, int));
 CMOCK_MOCK_FUNCTION(MathMocker, int, substract, (int, int));
 ```
 
@@ -70,18 +70,26 @@ To specify the expectations you use Google Mock's macros as you normally would d
 {
     MathMocker mock;
 
-    EXPECT_CALL(mock, divide(1, 1)).WillOnce(Return(11));
-    ASSERT_EQ(11, divide(1, 1)); // calling the mock
+    EXPECT_CALL(mock, add(1, 1)).WillOnce(Return(11));
+    ASSERT_EQ(11, add(1, 1)); // calling the mock
 
     EXPECT_CALL(mock, substract(1, 2)).WillOnce(Return(12));
     ASSERT_EQ(12, substract(1, 2)); // calling the mock
 }
 
-ASSERT_EQ(1, divide(1, 1)); // calling the real function
+ASSERT_EQ(2, add(1, 1)); // calling the real function
 ASSERT_EQ(-1, substract(1, 2)); // calling the real function
 ```
 
-Before the generic `CMOCK_MOCK_FUNCTION` macro was introduced, function mocks where created using macros `CMOCK_MOCK_FUNCTIONn`. These macros are still supported, though migration to the new `CMOCK_MOCK_FUNCTION` is recommended. For instance `CMOCK_MOCK_FUNCTION(MathMocker, int, divide, (int, int))` is equivalent to `CMOCK_MOCK_FUNCTION2(MathMocker, divide, int(int, int))`.
+Still, you might want to call a real function. `CMockMocker` class has a static member holding a pointer to a real function. Use the `CMOCK_REAL_FUNCTION` macro to call a real function.
+
+```cpp
+MathMocker mock;
+
+ASSERT_EQ(2, CMOCK_REAL_FUNCTION(MathMocker, add)(1, 2));
+```
+
+Before the generic `CMOCK_MOCK_METHOD` and `CMOCK_MOCK_FUNCTION` macros were introduced, function mocks were created using `MOCK_METHOD`/`MOCK_METHODn` and `CMOCK_MOCK_FUNCTIONn` macros respectively. These macros are still supported as long as they are used consistently for a given method/function pair, though migration to the new ones is recommended. For instance, if you use `MOCK_METHOD`/`MOCK_METHODn` to mock a method, then you must use `CMOCK_MOCK_FUNCTIONn` to mock a corresponding function. Note that `CMOCK_REAL_FUNCTION` is only supported for functions mocked with new generic macros.
 
 ### Using macros (deprecated) ###
 
@@ -95,15 +103,15 @@ These macros do what theirs' method counterparts do `MOCK_METHODn`, `EXPECT_CALL
 
 #### Creating mock ####
 
-In fact both `DECLARE_FUNCTION_MOCKn` and `IMPLEMENT_FUNCTION_MOCKn` stand for a series of macros for defining and implementing a function mock, respectively. These macros take three arguments: a mock class name, a function name and a function prototype.
+Both `DECLARE_FUNCTION_MOCKn` and `IMPLEMENT_FUNCTION_MOCKn` stand for a series of macros for defining and implementing a function mock, respectively. These macros take three arguments: a mock class name, a function name, and a function prototype.
 
-C Mock internally redefines a function being mocked. Because only one implementation of a function might exist in an executable, a splitting of a declaration and implementation is necessary. Especially, if mocking a certain function takes place in a more than one compilation unit. Therefore declaration should be put in a header file whereas implementation in a source file.
+C Mock internally redefines a function being mocked. Because only one implementation of a function might exist in an executable, a splitting of a declaration and implementation is necessary. Especially, if mocking a certain function takes place in more than one compilation unit. Therefore declaration should be put in a header file whereas implementation in a source file.
 
-C Mock has no knowledge whether a mocked function is declared with a name mangling - whether this is a pure C function or a C++ function. Therefore C Mock does not redeclare mocked function. Original function prototype declaration should be used (i.e. use of original function header file).
+C Mock does not know whether a mocked function is declared with a name mangling - whether this is a pure C function or a C++ function. Therefore C Mock does not redeclare mocked function. Original function prototype declaration should be used (i.e. use of original function header file).
 
-Suppose you want to mock *int add(int, int)* function declared in *math.h* header file. To do that you can create *AddFunctionMock* mock class:
+Suppose you want to mock `int add(int, int)` function declared in *math.h* header file. To do that you create `AddFunctionMock` mock class:
 
-* *add_function_mock.h*
+*add_function_mock.h*
 
     ```cpp
     #include <cmock/cmock.h>
@@ -113,7 +121,7 @@ Suppose you want to mock *int add(int, int)* function declared in *math.h* heade
     DECLARE_FUNCTION_MOCK2(AddFunctionMock, add, int(int, int));
     ```
 
-* *add_function_mock.cc*
+*add_function_mock.cc*
 
     ```cpp
     IMPLEMENT_FUNCTION_MOCK2(AddFunctionMock, add, int(int, int));
@@ -121,14 +129,14 @@ Suppose you want to mock *int add(int, int)* function declared in *math.h* heade
 
 #### Specifying expectations ####
 
-`EXPECT_FUNCTION_CALL` and `ON_FUNCTION_CALL` do exactly what theirs' method equivalents. Both take two arguments: a mock class instance and the arguments you expect - there is no need to repeat function name since it is already known at this point. Suppose we expect *add* function to be called once with arguments *1* and *2*, and want it to return *12*:
+`EXPECT_FUNCTION_CALL` and `ON_FUNCTION_CALL` do exactly what theirs' method equivalents. Both take two arguments: a mock class instance and the arguments you expect - there is no need to repeat the function name since it is already known at this point. Suppose we expect the `add` function to be called once with arguments *1* and *2*, and want it to return *12*:
 
 ```cpp
 AddFunctionMock mock;
 EXPECT_FUNCTION_CALL(mock, (1, 2)).WillOnce(::testing::Return(12));
 ```
 
-A function is mocked as long as its corresponding mock class instance exists. This allows to control when a function is mocked.
+A function is mocked as long as its corresponding mock class instance exists. This allows controlling when a function is mocked.
 
 ```cpp
 {
@@ -139,7 +147,7 @@ A function is mocked as long as its corresponding mock class instance exists. Th
 add(1, 2); // calling the real function
 ```
 
-Still you might want to use a mocked function's real implementation. Each mock class exports static *real* class field which holds pointer to a real function.
+Still, you might want to call a real function. Each mock class exports a static `real` class member holding a pointer to a real function.
 
 ```cpp
 AddFunctionMock mock;
@@ -151,15 +159,15 @@ foo(1, 2); // calling the real function
 
 C Mock uses specific GNU/Linux features internally and a test building requires a few additional steps.
 
-Firstly, all functions you want to mock must be compiled into a dynamic library. If it includes your project-specific functions you must put them into a dynamic library as well. In such circumstances it seems reasonable to build all code under test as a dynamic library. Selecting only those parts that you are going to mock might be tedious and cumbersome.
+Firstly, all functions you want to mock must be compiled into a dynamic library. If it includes your project-specific functions you must put them into a dynamic library as well. In such circumstances, it seems reasonable to build all code under test as a dynamic library. Selecting only those parts that you are going to mock might be tedious and cumbersome.
 
 Secondly, you must pass the following options to a linker when building a test executable:
 
-* *-rdynamic* - adds all symbols to dynamic symbol table
-* *-Wl,--no-as-needed* - forces to link with library during static linking when there are no dependencies to it
+* *-rdynamic* - adds all symbols to a dynamic symbol table
+* *-Wl,--no-as-needed* - forces to link with the library during static linking when there are no dependencies to it
 * *-ldl* - links with dynamic linking loader library
 
-C Mock comes with *cmock-config* tool to hide all these details away from you. Run
+C Mock comes with the *cmock-config* tool to hide all these details away from you. Run
 
 ```
 cmock-config --cflags [path to Google Test]
@@ -173,7 +181,7 @@ cmock-config --libs [path to Google Test]
 
 to get the compilations and linker options, respectively.
 
-Since [it is not recommended to install a pre-compiled version of Google Test][4] many distributions don't provide pre-compiled Google Test anymore. You need to download and compile Google Test manually as described in [Google Test][1]. Optional second command argument is a path to a directory contaning downloaded and built Google Test.
+Since [it is not recommended to install a pre-compiled version of Google Test][4] many distributions don't provide pre-compiled Google Test anymore. You need to download and compile Google Test manually as described in [Google Test][1]. The optional second command argument is a path to a directory containing downloaded and built Google Test.
 
 Let's say you built a code under test into *libfoo.so* and put a test code in *bar.cc*. To build your test executable you would run:
 
@@ -182,7 +190,7 @@ g++ `cmock-config --cflags` -c bar.cc -o bar.o
 g++ `cmock-config --libs` -pthread -lfoo bar.o -o bar # Google Test requires -pthread
 ```
 
-When building code under test as a dynamic library it is handy to specify *soname* as an absolute path name. Then when test executable is run no additional environment setup is required for the dynamic linking loader to locate your library (i.e. setting LD\_LIBRARY\_PATH).
+When building code under test as a dynamic library it is handy to specify *soname* as an absolute pathname. Then when the test executable is run no additional environment setup is required for the dynamic linking loader to locate your library (i.e. setting `LD_LIBRARY_PATH`).
 
 Installation
 ------------
@@ -215,7 +223,7 @@ make
 make test
 ```
 
-Optionally you can provide a directory containing downloaded and built Google Test by setting _GTEST\_DIR_:
+Optionally you can provide a directory containing downloaded and built Google Test by setting `GTEST_DIR`:
 
 ```
 GTEST_DIR=/path/to/googletest make

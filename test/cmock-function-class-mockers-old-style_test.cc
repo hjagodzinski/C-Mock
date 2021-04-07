@@ -7,20 +7,20 @@ using namespace ::testing;
 class MathMocker : public CMockMocker<MathMocker>
 {
 public:
-    CMOCK_MOCK_METHOD(int, add, (int, int));
-    CMOCK_MOCK_METHOD(int, substract, (int, int));
-    CMOCK_MOCK_METHOD(int, negate, (int));
+    MOCK_METHOD2(add, int(int, int));
+    MOCK_METHOD2(substract, int(int, int));
+    MOCK_METHOD1(negate, int(int));
 };
 
-CMOCK_MOCK_FUNCTION(MathMocker, int, add, (int, int));
-CMOCK_MOCK_FUNCTION(MathMocker, int, substract, (int, int));
-CMOCK_MOCK_FUNCTION(MathMocker, int, negate, (int));
+CMOCK_MOCK_FUNCTION2(MathMocker, add, int(int, int));
+CMOCK_MOCK_FUNCTION2(MathMocker, substract, int(int, int));
+CMOCK_MOCK_FUNCTION1(MathMocker, negate, int(int));
 
 /**
  * Functions add and substract are mocked as long as MathMocker instance exists.
  * Once a mock function is destroyed, a call directs to a real function.
  */
-TEST(FunctionClassMockersTest, MocksFunctionAsLongAsMockerInstanceExists) {
+TEST(FunctionClassMockersOldStyleTest, MocksFunctionAsLongAsMockerInstanceExists) {
 
 	{
 		MathMocker mock;
@@ -36,7 +36,7 @@ TEST(FunctionClassMockersTest, MocksFunctionAsLongAsMockerInstanceExists) {
 	ASSERT_EQ(-1, substract(1, 2));
 }
 
-TEST(FunctionClassMockersTest, ThrowsExceptionIfRealFunctionNotFound) {
+TEST(FunctionClassMockersOldStyleTest, ThrowsExceptionIfRealFunctionNotFound) {
 
 	{
 		MathMocker mock;
@@ -46,15 +46,4 @@ TEST(FunctionClassMockersTest, ThrowsExceptionIfRealFunctionNotFound) {
 	}
 
 	EXPECT_THROW(negate(3), std::logic_error);
-}
-
-TEST(FunctionClassMockersTest, ProvidesMeansToCallRealFunction) {
-
-	{
-		MathMocker mock;
-
-		ASSERT_EQ(2, CMOCK_REAL_FUNCTION(MathMocker, add)(1, 1));
-	}
-
-	ASSERT_EQ(2, CMOCK_REAL_FUNCTION(MathMocker, add)(1, 1));
 }
