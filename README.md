@@ -6,7 +6,7 @@ C Mock - Google Mock Extension
 Overview
 --------
 
-C Mock is [Google Mock][1]'s extension allowing a function mocking.
+C Mock is [Google Mock][1]'s extension allowing a function mocking. Only global (non-static) functions mocking is supported.
 
 This is neither a patch to nor fork of Google Mock. This is just a set of headers providing a way to use tools for mock methods with mock functions in tests.
 
@@ -159,7 +159,7 @@ foo(1, 2); // calling the real function
 
 C Mock uses specific GNU/Linux features internally and a test build requires a few additional steps.
 
-Firstly, all functions you want to mock must be compiled into a dynamic library. If it includes your project-specific functions you must put them into a dynamic library as well. In such circumstances, it seems reasonable to build all code under test as a dynamic library. Selecting only those parts that you are going to mock might be tedious and cumbersome.
+Firstly, all functions you want to mock must be compiled into a dynamic library. If it includes your project-specific functions you must put them into a dynamic library as well.
 
 Secondly, you must pass the following options to a linker when building a test executable:
 
@@ -183,24 +183,27 @@ to get the compilations and linker options, respectively.
 
 Since [it is not recommended to install a pre-compiled version of Google Test][4] many distributions don't provide pre-compiled Google Test anymore. You need to download and compile Google Test manually as described in [Google Test][1]. The optional second command argument is a path to a directory containing downloaded and built Google Test.
 
-Suppose you have `foo.c` and `bar.c` files containing a code under a test and a `foobar_test.cc` file containing the tests. To build your test executable:
+Suppose you have `foo.c` and `bar.c` files containing a code to test, a `spam.c` file containing project functions to mock, and a `foobar_test.cc` file containing the tests. To build your test executable:
 
-1. Compile a code under test.
+1. Compile the code to test.
 
     ```sh
-    cc -c -fPIC foo.c -o foo.o
-    cc -c -fPIC bar.c -o bar.o
+    cc -c foo.c -o foo.o
+    cc -c bar.c -o bar.o
     ```
 
     Note that C-Mock does not require a code under test to be compiled with a C++ compiler. In the example above, a code under a test is compiled with a C compiler and the tests themselves are compiled with a C++ compiler.
 
-2. Build a shared library containing a code under test.
+2. Build a shared library containing project functions to mock.
 
     ```sh
-    cc -shared -Wl,-soname,$(pwd)/libfoobar.so -o libfoobar.so foo.o bar.o
+    cc -c -fPIC spam.c -o spam.o
+    cc -shared -Wl,-soname,$(pwd)/libspam.so -o libspam.so spam.o
     ```
 
-    When building code under test as a dynamic library it is handy to specify *soname* as an absolute pathname. Then when the test executable is run no additional environment setup is required for the dynamic linking loader to locate your library (i.e. setting `LD_LIBRARY_PATH`).
+    In general, this step is optional if the functions to mock are already provided by a dynamic library (i.e. third-party library).
+
+    When building a dynamic library it is handy to specify *soname* as an absolute pathname. Then when the test executable is run no additional environment setup is required for the dynamic linking loader to locate your library (i.e. setting `LD_LIBRARY_PATH`).
 
 3. Compile the tests.
 
@@ -209,10 +212,12 @@ Suppose you have `foo.c` and `bar.c` files containing a code under a test and a 
     ```
 
 4. Build a test executable.
-    
+
     ```sh
-    g++ `cmock-config --libs` -pthread -lfoobar foobar_test.o -o foobar_test # Google Test requires -pthread
+    g++ `cmock-config --libs` -pthread -lspam foobar_test.o foo.o bar.o -o foobar_test
     ```
+
+    Google Test requires -pthread.
 
 Installation
 ------------
