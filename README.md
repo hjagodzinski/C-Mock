@@ -113,19 +113,19 @@ Suppose you want to mock `int add(int, int)` function declared in *math.h* heade
 
 *add_function_mock.h*
 
-    ```cpp
-    #include <cmock/cmock.h>
+```cpp
+#include <cmock/cmock.h>
 
-    #include "math.h" // use original function declaration
+#include "math.h" // use original function declaration
 
-    DECLARE_FUNCTION_MOCK2(AddFunctionMock, add, int(int, int));
-    ```
+DECLARE_FUNCTION_MOCK2(AddFunctionMock, add, int(int, int));
+```
 
 *add_function_mock.cc*
 
-    ```cpp
-    IMPLEMENT_FUNCTION_MOCK2(AddFunctionMock, add, int(int, int));
-    ```
+```cpp
+IMPLEMENT_FUNCTION_MOCK2(AddFunctionMock, add, int(int, int));
+```
 
 #### Specifying expectations ####
 
