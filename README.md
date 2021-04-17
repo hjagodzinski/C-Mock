@@ -157,7 +157,7 @@ foo(1, 2); // calling the real function
 
 ### Building ###
 
-C Mock uses specific GNU/Linux features internally and a test building requires a few additional steps.
+C Mock uses specific GNU/Linux features internally and a test build requires a few additional steps.
 
 Firstly, all functions you want to mock must be compiled into a dynamic library. If it includes your project-specific functions you must put them into a dynamic library as well. In such circumstances, it seems reasonable to build all code under test as a dynamic library. Selecting only those parts that you are going to mock might be tedious and cumbersome.
 
@@ -169,13 +169,13 @@ Secondly, you must pass the following options to a linker when building a test e
 
 C Mock comes with the *cmock-config* tool to hide all these details away from you. Run
 
-```
+```sh
 cmock-config --cflags [path to Google Test]
 ```
 
 and
 
-```
+```sh
 cmock-config --libs [path to Google Test]
 ```
 
@@ -183,14 +183,36 @@ to get the compilations and linker options, respectively.
 
 Since [it is not recommended to install a pre-compiled version of Google Test][4] many distributions don't provide pre-compiled Google Test anymore. You need to download and compile Google Test manually as described in [Google Test][1]. The optional second command argument is a path to a directory containing downloaded and built Google Test.
 
-Let's say you built a code under test into *libfoo.so* and put a test code in *bar.cc*. To build your test executable you would run:
+Suppose you have `foo.c` and `bar.c` files containing a code under a test and a `foobar_test.cc` file containing the tests. To build your test executable:
 
-```
-g++ `cmock-config --cflags` -c bar.cc -o bar.o
-g++ `cmock-config --libs` -pthread -lfoo bar.o -o bar # Google Test requires -pthread
-```
+1. Compile a code under test.
 
-When building code under test as a dynamic library it is handy to specify *soname* as an absolute pathname. Then when the test executable is run no additional environment setup is required for the dynamic linking loader to locate your library (i.e. setting `LD_LIBRARY_PATH`).
+    ```sh
+    cc -c -fPIC foo.c -o foo.o
+    cc -c -fPIC bar.c -o bar.o
+    ```
+
+    Note that C-Mock does not require a code under test to be compiled with a C++ compiler. In the example above, a code under a test is compiled with a C compiler and the tests themselves are compiled with a C++ compiler.
+
+2. Build a shared library containing a code under test.
+
+    ```sh
+    cc -shared -Wl,-soname,$(pwd)/libfoobar.so -o libfoobar.so foo.o bar.o
+    ```
+
+    When building code under test as a dynamic library it is handy to specify *soname* as an absolute pathname. Then when the test executable is run no additional environment setup is required for the dynamic linking loader to locate your library (i.e. setting `LD_LIBRARY_PATH`).
+
+3. Compile the tests.
+
+    ```sh
+    g++ `cmock-config --cflags` -c foobar_test.cc -o foobar_test.o
+    ```
+
+4. Build a test executable.
+    
+    ```sh
+    g++ `cmock-config --libs` -pthread -lfoobar foobar_test.o -o foobar_test # Google Test requires -pthread
+    ```
 
 Installation
 ------------
