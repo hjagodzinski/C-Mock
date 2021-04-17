@@ -6,12 +6,10 @@ extern "C" {
 #endif
 
 int add(int a1, int a2);
-int divide(int a1, int a2);
 int substract(int a1, int a2);
 
-/* These function aren't implemented, but can be mocked */
+/* This function isn't implemented, but still can be mocked. */
 int negate(int n);
-unsigned int square_root(unsigned int n);
 
 #ifdef __cplusplus
 }

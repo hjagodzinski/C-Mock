@@ -5,9 +5,15 @@ CFLAGS=$(shell $(CMOCK)/bin/cmock-config --cflags $(GTEST_DIR))
 LDFLAGS=$(shell $(CMOCK)/bin/cmock-config --libs $(GTEST_DIR))
 
 SRCS=$(shell ls *.cc)
-OBJS=$(SRCS:.cc=.o)
+EXECS=$(SRCS:.cc=)
 
-all: libmath.so cmock_test
+all: $(EXECS)
+
+run:
+	./cmock-function-class-mockers_test
+	./cmock-function-mockers_test
+	./cmock-function-class-mockers-old-style_test
+	./cmock-spec-builders_test
 
 math.o: math.c
 	$(CC) -c -fPIC $^ -o $@
@@ -18,8 +24,8 @@ libmath.so: math.o
 %.o: %.cc
 	$(CXX) -c $(CFLAGS) $^ -o $@
 
-cmock_test: $(OBJS)
+%_test: %_test.o libmath.so
 	$(CXX) -o $@ $^ $(LDFLAGS) -pthread -L$(CWD) -lmath -lgmock_main -lgmock -lgtest
 
 clean:
-	rm -f $(OBJS) cmock_test math.o libmath.so
+	rm -f *.o *.so $(EXECS)
