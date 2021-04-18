@@ -84,8 +84,6 @@ ASSERT_EQ(-1, substract(1, 2)); // calling the real function
 Still, you might want to call a real function. `CMockMocker` class has a static member holding a pointer to a real function. Use the `CMOCK_REAL_FUNCTION` macro to call a real function.
 
 ```cpp
-MathMocker mock;
-
 ASSERT_EQ(2, CMOCK_REAL_FUNCTION(MathMocker, add)(1, 2));
 ```
 
