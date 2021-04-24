@@ -177,7 +177,7 @@ and
 cmock-config --libs [path to Google Test]
 ```
 
-to get the compilations and linker options, respectively.
+to get the compiler and linker options, respectively.
 
 Since [it is not recommended to install a pre-compiled version of Google Test][4] many distributions don't provide pre-compiled Google Test anymore. You need to download and compile Google Test manually as described in [Google Test][1]. The optional second command argument is a path to a directory containing downloaded and built Google Test.
 
