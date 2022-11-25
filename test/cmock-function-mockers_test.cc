@@ -22,9 +22,14 @@ TEST(FunctionMockersTest, MocksFunctionAsLongAsMockInstanceExists) {
 		EXPECT_FUNCTION_CALL(mock, (1, 2)).WillOnce(Return(12));
 		ASSERT_EQ(12, add(1, 2));
 	}
-
+#if defined(SUPPORT_REAL_FUNCTIONS)
 	ASSERT_EQ(3, add(1, 2));
+#else
+    EXPECT_THROW(add(1, 1), std::logic_error);
+#endif //defined(SUPPORT_REAL_FUNCTIONS)
 }
+
+#if defined(SUPPORT_REAL_FUNCTIONS)
 
 /**
  * real static mock class field holds pointer to a real function.
@@ -32,6 +37,7 @@ TEST(FunctionMockersTest, MocksFunctionAsLongAsMockInstanceExists) {
 TEST(FunctionMockersTest, FunctionMockExportsRealFunctionPointer) {
 	EXPECT_EQ(3, AddFunctionMock::real(1, 2));
 }
+#endif //defined(SUPPORT_REAL_FUNCTIONS)
 
 /**
  * Function negate doesn't exist, but can be mocked.

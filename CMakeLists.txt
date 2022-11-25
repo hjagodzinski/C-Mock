@@ -21,6 +21,13 @@ project(cmock VERSION 0.5.0 LANGUAGES CXX)
 if(NOT CMAKE_C_COMPILE_OBJECT)
     set(CMAKE_C_COMPILE_OBJECT ${CMAKE_C_COMPILE_SHARED} CACHE STRING "Don't know why this is missing")
 endif()
+if(NOT CMAKE_C_ARCHIVE_CREATE)
+    set(CMAKE_C_ARCHIVE_CREATE ${CMAKE_C_CREATE_STATIC_LIBRARY} CACHE STRING "Don't know why this is missing")
+endif()
+if(NOT CMAKE_C_ARCHIVE_FINISH)
+    set(CMAKE_C_ARCHIVE_FINISH "" CACHE STRING "Don't know why this is missing")
+endif()
+
 
 # -------------------------------------------------------------------
 # If not already declared - get gmock.
@@ -59,7 +66,8 @@ target_include_directories(gmock_c SYSTEM
 target_link_libraries( gmock_c
     INTERFACE
         gmock
+        ${CMAKE_DL_LIBS}
 )
 
 # -------------------------------------------------------------------
-#add_subdirectory(test)
+add_subdirectory(test)
