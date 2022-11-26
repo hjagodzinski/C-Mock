@@ -22,7 +22,7 @@ libmath.so: math.o
 	$(CC) -shared -Wl,-soname,$(CWD)/$@ -o $@ $^
 
 %.o: %.cc
-	$(CXX) -c $(CFLAGS) $^ -o $@
+	$(CXX) -c $(CFLAGS) -DSUPPORT_REAL_FUNCTIONS $^ -o $@
 
 %_test: %_test.o libmath.so
 	$(CXX) -o $@ $^ $(LDFLAGS) -pthread -L$(CWD) -lmath -lgmock_main -lgmock -lgtest
