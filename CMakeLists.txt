@@ -13,6 +13,7 @@ if( POLICY CMP0077 )
     cmake_policy(SET CMP0077 NEW) # options do nothing when defined as variable.
 endif()
 
+option(BUILD_TESTING "Build tests for C-Mock" OFF)
 
 project(cmock VERSION 0.5.0 LANGUAGES CXX)
 
@@ -31,7 +32,7 @@ endif()
 
 # -------------------------------------------------------------------
 # If not already declared - get gmock.
-if (NOT TARGET gmock)
+if (BUILD_TESTING AND NOT TARGET gmock)
     include(FetchContent)
 
     FetchContent_Declare( googletest
@@ -70,4 +71,6 @@ target_link_libraries( gmock_c
 )
 
 # -------------------------------------------------------------------
-add_subdirectory(test)
+if (BUILD_TESTING)
+    add_subdirectory(test)
+endif()
