@@ -77,10 +77,12 @@ cmock_lookup(const char *fname)
 #define CMOCK_MOCK_METHOD(_Ret, _FunctionName, _Args) \
     MOCK_METHOD(_Ret, _FunctionName, _Args); \
 \
-    typedef _Ret (*_FunctionName##_type)(GMOCK_PP_REPEAT(CMOCK_INTERNAL_NO_PARAMETER_NAME, (GMOCK_INTERNAL_SIGNATURE(_Ret, _Args)), GMOCK_PP_NARG0 _Args)); \
-    static _FunctionName##_type cmock_real_##_FunctionName;
+    typedef _Ret (*_FunctionName##_cmockType)(GMOCK_PP_REPEAT(CMOCK_INTERNAL_NO_PARAMETER_NAME, (GMOCK_INTERNAL_SIGNATURE(_Ret, _Args)), GMOCK_PP_NARG0 _Args)); \
+    /* NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables) */ \
+    static _FunctionName##_cmockType cmock_real_##_FunctionName;
 
 #define CMOCK_INTERNAL_IMPLEMENT_FUNCTION(_ClassName, _FunctionName, _RealFunctionPtr, _N, _Signature) \
+    /* NOLINTNEXTLINE(misc-unused-parameters,readability-inconsistent-declaration-parameter-name) */ \
     CMOCK_INTERNAL_RETURN_TYPE(_Signature) _FunctionName(GMOCK_PP_REPEAT(GMOCK_INTERNAL_PARAMETER, _Signature, _N)) { \
         _ClassName *mock = _ClassName::cmock_get_instance(); \
         if (mock != nullptr) { \
@@ -100,12 +102,14 @@ cmock_lookup(const char *fname)
     _ClassName::cmock_real_##_FunctionName
 
 #define CMOCK_MOCK_FUNCTION(_ClassName,  _Ret, _FunctionName, _Args) \
-    _ClassName::_FunctionName##_type CMOCK_REAL_FUNCTION(_ClassName, _FunctionName) = (_ClassName::_FunctionName##_type)cmock_lookup(#_FunctionName); \
+    /* NOLINTNEXTLINE(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables,cppcoreguidelines-pro-type-cstyle-cast) */ \
+    _ClassName::_FunctionName##_cmockType CMOCK_REAL_FUNCTION(_ClassName, _FunctionName) = (_ClassName::_FunctionName##_cmockType)cmock_lookup(#_FunctionName); \
     CMOCK_INTERNAL_IMPLEMENT_FUNCTION(_ClassName, _FunctionName, CMOCK_REAL_FUNCTION(_ClassName, _FunctionName), GMOCK_PP_NARG0 _Args, (GMOCK_INTERNAL_SIGNATURE(_Ret, _Args)))
 
 #define CMOCK_INTERNAL_MOCK_FUNCTIONN(_ClassName, _FunctionName, _N, _Signature) \
-    typedef CMOCK_INTERNAL_RETURN_TYPE(_Signature) (*_ClassName##_##_FunctionName##_type)(GMOCK_PP_REPEAT(CMOCK_INTERNAL_NO_PARAMETER_NAME, _Signature, _N)); \
-    static _ClassName##_##_FunctionName##_type cmock_real_##_FunctionName = (_ClassName##_##_FunctionName##_type)cmock_lookup(#_FunctionName); \
+    typedef CMOCK_INTERNAL_RETURN_TYPE(_Signature) (*_ClassName##_##_FunctionName##_cmockType)(GMOCK_PP_REPEAT(CMOCK_INTERNAL_NO_PARAMETER_NAME, _Signature, _N)); \
+    /* NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast) */ \
+    static _ClassName##_##_FunctionName##_cmockType cmock_real_##_FunctionName = (_ClassName##_##_FunctionName##_cmockType)cmock_lookup(#_FunctionName); \
     CMOCK_INTERNAL_IMPLEMENT_FUNCTION(_ClassName, _FunctionName, cmock_real_##_FunctionName, _N, _Signature)
 
 #define CMOCK_MOCK_FUNCTION0(c, n, ...) \

@@ -6,7 +6,9 @@ C Mock - Google Mock Extension
 Overview
 --------
 
-C Mock is [Google Mock][1]'s extension allowing a function mocking. Only global (non-static) functions mocking is supported.
+C Mock is [Google Mock][1]'s extension allowing a function mocking. Either:
+* Global dynamically linked library (non-static) functions mocking 
+* Interface defined libraries (header only), a portion of a statically linked library.
 
 This is neither a patch to nor fork of Google Mock. This is just a set of headers providing a way to use tools for mock methods with mock functions in tests.
 
@@ -81,7 +83,7 @@ ASSERT_EQ(2, add(1, 1)); // calling the real function
 ASSERT_EQ(-1, substract(1, 2)); // calling the real function
 ```
 
-Still, you might want to call a real function. `CMockMocker` class has a static member holding a pointer to a real function. Use the `CMOCK_REAL_FUNCTION` macro to call a real function.
+When using a dynamically linked library, you might want to call a real function. `CMockMocker` class has a static member holding a pointer to a real function. Use the `CMOCK_REAL_FUNCTION` macro to call a real function.
 
 ```cpp
 ASSERT_EQ(2, CMOCK_REAL_FUNCTION(MathMocker, add)(1, 2));
@@ -157,7 +159,10 @@ foo(1, 2); // calling the real function
 
 C Mock uses specific GNU/Linux features internally and a test build requires a few additional steps.
 
-Firstly, all functions you want to mock must be compiled into a dynamic library. If it includes your project-specific functions you must put them into a dynamic library as well.
+#### When using a dynamic library #####
+
+Firstly, all functions you want to mock must be compiled into a dynamic library.
+If it includes your project-specific functions you must put them into a dynamic library as well.
 
 Secondly, you must pass the following options to a linker when building a test executable:
 
@@ -216,6 +221,135 @@ Suppose you have `foo.c` and `bar.c` files containing a code to test, a `spam.c`
     ```
 
     Google Test requires -pthread.
+
+#### When using a static library #####
+
+This is an alternative to allow building a static library and replacing it with mocks for your dynamic libraries.
+
+It assumes using cmake for the building to show how a library can be split up into an INTERFACE (api) as well as an implementation static library,
+and then decide what is linked.  Here is an example static library
+
+```
+foo/
+   include/
+     foo.h
+   src/
+     foo.c
+   mock/
+     mock_foo.h
+     mock_foo.cpp
+     CMakeLists.txt
+   CMakeLists.txt
+```
+
+*foo.h*
+
+```cpp
+#pragma once
+
+#include <stdint.h>
+#include <stdint.h>
+
+void foo_DoBar(uint32_t arg);
+
+bool foo_isBar(void);
+```
+
+*foo.c*
+
+```cpp
+#include <foo.h>
+
+static bool foo_Bar = false;
+
+void foo_DoBar(uint32_t arg)
+{
+    // set Bar to true when even
+    foo_Bar = ((arg % 2) == 0);
+}
+
+bool foo_isBar()
+{
+    return foo_Bar;
+}
+``` 
+
+*foo/CMakeLists.txt
+
+```cmake
+add_library(foo_api INTERFACE)
+add_library(foo::api ALIAS foo_api)
+
+target_include_directories(foo_api
+  INTERFACE
+    include
+)
+# -----------------------------------------------
+add_library(foo STATIC)
+
+target_sources(foo
+  PRIVATE
+    include/foo.h
+    src/foo.c
+)
+
+target_link_libraries(foo
+  PUBLIC
+    foo::api
+)
+# -----------------------------------------------
+add_subdirectory(mock)
+```
+
+* mock/mock_foo.h
+
+```cpp
+#include "foo.h"
+
+#include <cmock/cmock.h>
+
+class FooMocker : public CMockMocker<FooMocker>
+{
+public:
+    CMOCK_MOCK_METHOD(void, foo_DoBar, (uint32_t arg));
+    CMOCK_MOCK_METHOD(bool, foo_isBar, ());
+};
+```
+
+*mock/mock_foo.cpp*
+
+```cpp
+#include "mock_foo.h
+
+CMOCK_MOCK_FUNCTION(FooMocker, void, foo_DoBar, (uint32_t arg));
+CMOCK_MOCK_FUNCTION(FooMocker, bool, foo_isBar, ());
+```
+
+*mock/CMakeLists.txt*
+
+```cmake
+add_library(foo_mock INTERFACE)
+add_library(foo::mock ALIAS foo_mock)
+
+target_sources(foo_mock
+  PRIVATE
+    mock_foo.h
+    mock_foo.cpp
+)
+
+target_include_directories(foo_mock
+  PUBLIC
+    .
+)
+
+target_link_libraries(foo_mock
+  PUBLIC
+    foo::api
+    gmock_c
+)
+```
+
+For tests, link library `foo::mock`, and for all other applications and implementations one can link `foo`
 
 Installation
 ------------

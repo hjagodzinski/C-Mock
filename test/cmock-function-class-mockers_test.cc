@@ -32,8 +32,13 @@ TEST(FunctionClassMockersTest, MocksFunctionAsLongAsMockerInstanceExists) {
 		ASSERT_EQ(12, substract(1, 2));
 	}
 
+#if defined(SUPPORT_REAL_FUNCTIONS)
 	ASSERT_EQ(2, add(1, 1));
 	ASSERT_EQ(-1, substract(1, 2));
+#else
+    EXPECT_THROW(add(1, 1), std::logic_error);
+    EXPECT_THROW(substract(1, 2), std::logic_error);
+#endif //defined(SUPPORT_REAL_FUNCTIONS)
 }
 
 TEST(FunctionClassMockersTest, ThrowsExceptionIfRealFunctionNotFound) {
@@ -48,6 +53,7 @@ TEST(FunctionClassMockersTest, ThrowsExceptionIfRealFunctionNotFound) {
 	EXPECT_THROW(negate(3), std::logic_error);
 }
 
+#if defined(SUPPORT_REAL_FUNCTIONS)
 TEST(FunctionClassMockersTest, ProvidesMeansToCallRealFunction) {
 
 	{
@@ -58,3 +64,4 @@ TEST(FunctionClassMockersTest, ProvidesMeansToCallRealFunction) {
 
 	ASSERT_EQ(2, CMOCK_REAL_FUNCTION(MathMocker, add)(1, 1));
 }
+#endif //defined(SUPPORT_REAL_FUNCTIONS)
