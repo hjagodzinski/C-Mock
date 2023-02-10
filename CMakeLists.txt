@@ -15,20 +15,7 @@ endif()
 
 option(BUILD_TESTING "Build tests for C-Mock" OFF)
 
-project(cmock VERSION 0.5.0 LANGUAGES CXX)
-
-# -------------------------------------------------------------------
-# Workaround for cmake 3.24.1
-if(NOT CMAKE_C_COMPILE_OBJECT)
-    set(CMAKE_C_COMPILE_OBJECT ${CMAKE_C_COMPILE_SHARED} CACHE STRING "Don't know why this is missing")
-endif()
-if(NOT CMAKE_C_ARCHIVE_CREATE)
-    set(CMAKE_C_ARCHIVE_CREATE ${CMAKE_C_CREATE_STATIC_LIBRARY} CACHE STRING "Don't know why this is missing")
-endif()
-if(NOT CMAKE_C_ARCHIVE_FINISH)
-    set(CMAKE_C_ARCHIVE_FINISH "" CACHE STRING "Don't know why this is missing")
-endif()
-
+project(cmock VERSION 0.5.0 LANGUAGES C CXX)
 
 # -------------------------------------------------------------------
 # If not already declared - get gmock.
